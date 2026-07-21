@@ -1,0 +1,5 @@
+Name: Codriver
+Description: Context-aware AI assistant
+Binding: codriver
+Package: codriver
+Interactive: true

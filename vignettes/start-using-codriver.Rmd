@@ -1,0 +1,95 @@
+---
+title: "Using codriver"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using codriver}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+knitr::opts_chunk$set(eval = FALSE)
+
+```
+
+
+Once you have configured a provider, codriver is the context-aware AI assistant
+for RStudio that is literally at your fingertips. Codriver is by your side to
+work in-place on the code you are editing.
+
+_If you haven't configured yet, read the article 
+[Getting started with codriver](getting-started-with-codriver.html)._
+
+Codriver works directly in the RStudio source editor. At configuration time,
+it binds to the shortcut key **`Ctrl+/`** (default; you can pass another
+combination with the `shortcut` parameter). Pressing this shortcut — or
+invoking from the **Addins** menu — launches codriver. Codriver inspects the
+editor context, chooses and executes one of five modes, and presents the result.
+
+Codriver works directly in the RStudio source editor. During configuration,
+codriver offers to register the default keyboard shortcut **`Ctrl+/`**.
+Shortcut registration is strongly recommended, but can be skipped or changed
+later via **Tools > Modify Keyboard Shortcuts** in RStudio.
+
+Pressing the keyboard shortcut - or invoking from the **Addins** menu - launches
+codriver. Codriver inspects the editor context, chooses and executes one of five
+modes, and presents the result.
+
+This article explains the codriver modes and how results are presented.
+
+------------------------------------------------------------------------
+
+## Codriver modes
+
+Codriver determines the mode from your cursor position and any selection. At a
+high level:
+
+- **At end of code → complete** \
+  Codriver will complete the line of code at the cursor position.
+  
+- **On a comment line → generate** \
+  Codriver will use the comment as a natural language instruction to generate
+  new code.
+  
+- **In whitespace → continue** \
+  Codriver will generate a new line or block of code without instruction, from
+  context only. \
+  _Note: whitespace directly after a comment line will trigger generate mode
+  instead._
+  
+- **In code → edit** \
+  Codriver will suggest improvements or fixes to existing code.
+  
+- **In an inline comment → comment** \
+  Codriver will suggest a short inline comment (or improvement) for the code on
+  the same line.
+
+------------------------------------------------------------------------
+
+## Result presentation
+
+Depending on the context and selected mode, results are presented as **ghost
+text** or an **edit suggestion**.
+
+**Ghost text** - shown gray and italic in the editor - is used when codriver
+suggests new content at the cursor position with nothing to replace. Accept with
+`TAB`. Moving the cursor, clicking with the mouse, or typing anything other than
+the suggested characters dismisses the suggestion.
+
+**Edit suggestions** with green and red highlighting are used when codriver
+proposes changes to existing code. Green for added text, red for removed text.
+If the suggestion contains only additions, only removals, or a single addition
+paired with a single removal on the same line, the changes are shown inline in
+the existing code, with a marker in the gutter. Accept with `TAB` or by clicking
+the gutter marker. `Escape` dismisses the suggestion.
+
+For more complex changes, a small panel appears just below the affected code
+instead. Accept with `TAB` or by clicking **Apply**. `Escape` or clicking
+**Discard** dismisses the suggestion.
+
+When codriver has no meaningful suggestion, it shows ghost text "# no
+suggestion" or an edit suggestion panel with no changes highlighted.

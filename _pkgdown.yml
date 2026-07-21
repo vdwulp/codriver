@@ -1,0 +1,21 @@
+url: https://vdwulp.github.io/codriver
+template:
+  bootstrap: 5
+home:
+  sidebar:
+    structure: [links, articles, license]
+    components:
+      links:
+        title: Links
+        text: |
+          - [Browse source code](https://github.com/vdwulp/codriver)
+          - [Report a bug](https://github.com/vdwulp/codriver/issues)
+      articles:
+        title: Articles
+        text: |
+          - [Getting started](articles/getting-started-with-codriver.html)
+          - [Using codriver](articles/start-using-codriver.html)
+authors:
+  "S.A. van der Wulp":
+    href: https://vdwulp.github.io/
+    html: vdwulp

@@ -1,0 +1,10 @@
+^codriver\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^\.positai$
+^\.claude$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^cran-comments\.md$
+^\.github$
