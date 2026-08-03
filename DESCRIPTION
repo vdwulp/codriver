@@ -1,7 +1,7 @@
 Package: codriver
 Title: Context-Aware AI Assistant for 'RStudio'
-Version: 0.0.0.9001
-Authors@R: person("S.A.", "van der Wulp", , "vdwulp@gmail.com", role = c("aut", "cre"))
+Version: 1.0.0
+Authors@R: person("S.A.", "van der Wulp", , "vdwulp@gmail.com", role = c("aut", "cre", "cph"))
 Description: A context-aware AI assistant for 'RStudio' that works directly in
     the source editor without switching context or opening a separate chat
     window. Reads the cursor position and selection to automatically choose the
@@ -12,8 +12,8 @@ URL: https://vdwulp.github.io/codriver
 BugReports: https://github.com/vdwulp/codriver/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 8.0.0
+Config/roxygen2/version: 8.0.0
+Config/roxygen2/markdown: TRUE
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 SystemRequirements: RStudio (>= 2026.04, https://posit.co/download/rstudio-desktop/)

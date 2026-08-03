@@ -45,6 +45,6 @@ jobs:
         with:
           source-files: '/github/workspace/docs/*'
           destination-username: 'vdwulp'
-          destination-repository: 'codriver.private.site' # Change to 'vdwulp.github.io'
+          destination-repository: 'vdwulp.github.io'
           destination-branch: 'main'
           destination-directory: 'codriver'
