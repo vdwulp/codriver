@@ -8,7 +8,7 @@ Description: A context-aware AI assistant for 'RStudio' that works directly in
     right action - generate, complete, continue, edit, or comment. Supports
     configuration of multiple large language model providers and can be invoked
     via the keyboard shortcut or Addins menu.
-URL: https://vdwulp.github.io/codriver
+URL: https://vdwulp.github.io/codriver/
 BugReports: https://github.com/vdwulp/codriver/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
