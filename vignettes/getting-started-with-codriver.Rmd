@@ -31,6 +31,9 @@ been given credentials by your organisation.
 If you have an **API key set and know your provider**, this is all you need:
 
 ```{r}
+# Install codriver
+install.packages("codriver")
+
 # OpenAI
 codriver::codriver_configure("openai", model = "gpt-5.1")
 

@@ -1,9 +1,11 @@
 # 🛣️ codriver → addin for RStudio
 <img src="man/figures/logo.png" align="right" width="139" style="float:right; width:139px;" class="pkgdown-hide">
 
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/codriver)](https://CRAN.R-project.org/package=codriver)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/vdwulp/codriver/blob/master/LICENSE.md)
-[![GitHub release](https://img.shields.io/github/v/release/vdwulp/codriver.svg)](https://github.com/vdwulp/codriver/releases/latest)
 [![R-CMD-check](https://github.com/vdwulp/codriver/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/vdwulp/codriver/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
 *A context-aware AI assistant for RStudio that is literally at your fingertips.*
 
@@ -20,7 +22,13 @@ in-place.
 
 ## ✈️ Installation
 
-Run these R commands:
+Run this R command to install the latest release of codriver from [CRAN](https://CRAN.R-project.org/package=codriver):
+
+``` r
+install.packages("codriver")
+```
+
+Run these R commands to install the development version of codriver from [GitHub](https://github.com/vdwulp/codriver):
 
 ```r
 # Install remotes package if necessary
