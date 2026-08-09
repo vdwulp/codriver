@@ -329,7 +329,7 @@ test_that("describe_columns - detects suffix pattern when columns share a last t
 
 test_that("describe_columns - suffix owned by a single prefix group is discarded", {
   # All _usd columns start with "amt" -> single prefix owner -> discard
-  result <- dc(c("amt_usd_a", "amt_usd_b", "other_eur"))
+  result <- dc(c("amt_a_usd", "amt_b_usd", "other_eur"))
   expect_false(grepl("\\*_usd", result))
 })
 

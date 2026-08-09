@@ -308,3 +308,26 @@ test_that("is_shortcut_registered - returns empty string when codriver::codriver
   local_mocked_bindings(rstudio_config_path = function(...) tmp, .package = "codriver")
   expect_equal(is_shortcut_registered(), "")
 })
+
+
+# ── register_shortcut ─────────────────────────────────────────────────────────
+
+test_that("register_shortcut - returns TRUE when shortcut is registered after call", {
+  with_mocked_bindings(
+    use_rstudio_keyboard_shortcut = function(...) invisible(NULL),
+    is_shortcut_registered = function() "Ctrl+Shift+P",
+    {
+      expect_true(register_shortcut("Ctrl+Shift+P"))
+    }
+  )
+})
+
+test_that("register_shortcut - returns FALSE when shortcut is not registered after call", {
+  with_mocked_bindings(
+    use_rstudio_keyboard_shortcut = function(...) invisible(NULL),
+    is_shortcut_registered = function() NULL,
+    {
+      expect_false(register_shortcut("Ctrl+Shift+P"))
+    }
+  )
+})

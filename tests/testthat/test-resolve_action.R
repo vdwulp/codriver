@@ -99,6 +99,10 @@ test_that("scan_lines - ignores # inside raw string with padding r\"-(...)- \"",
   expect_equal(scan_col(c('x <- r"-(# not a comment)-"'), 1L), -1L)
 })
 
+test_that("scan_lines - ignores # inside raw string with multi-dash padding", {
+  expect_equal(scan_col(c('x <- r"---(# not a comment)---"'), 1L), -1L)
+})
+
 test_that("scan_lines - detects comment after closed raw string", {
   expect_equal(scan_col(c('x <- r"(text)" # comment'), 1L), 16L)
 })
@@ -345,8 +349,23 @@ test_that("resolve_action - multi-line selection ending at col 1 trims trailing 
   expect_false(endsWith(result$text, "\n"))
 })
 
+test_that("resolve_action - multi-line code selection where anchor is start row with inline comment -> comment", {
+  ctx    <- make_selection_context(c("x <- 1 # old", "  "), 1L, 8L, 2L, 2L)
+  result <- ra(ctx)
+  expect_equal(result$mode, "comment")
+})
+
 test_that("resolve_action - multi-line comment selection -> generate from contiguous block", {
   ctx    <- make_selection_context(c("# line one", "# line two", "x <- 1"), 1L, 1L, 2L, 11L)
+  result <- ra(ctx)
+  expect_equal(result$mode, "generate")
+  expect_equal(result$text, "line one\nline two")
+})
+
+test_that("resolve_action - multi-line comment selection with non-comment row above anchor stops block at code row", {
+  # row 1 is code, rows 2-3 are comments; selection covers all three
+  # anchor = row 3 (comment), walk up hits row 1 (code) -> break -> block is rows 2-3 only
+  ctx    <- make_selection_context(c("x <- 1", "# line one", "# line two"), 1L, 1L, 3L, 11L)
   result <- ra(ctx)
   expect_equal(result$mode, "generate")
   expect_equal(result$text, "line one\nline two")
@@ -362,6 +381,32 @@ test_that("resolve_action - multi-line whitespace selection with comment start l
   ctx    <- make_selection_context(c("# instruction", "  ", "  "), 1L, 1L, 3L, 1L)
   result <- ra(ctx)
   expect_equal(result$mode, "generate")
+  expect_equal(result$text, "instruction")
+})
+
+test_that("resolve_action - multi-line whitespace selection with comment start line, anchor in whitespace -> generate", {
+  ctx    <- make_selection_context(c("# instruction   ", "  "), 1L, 15L, 2L, 2L)
+  result <- ra(ctx)
+  expect_equal(result$mode, "generate")
+  expect_equal(result$text, "instruction")
+})
+
+test_that("resolve_action - multi-line whitespace selection with code start line, anchor at comment column -> comment", {
+  ctx    <- make_selection_context(c("x <- 1 # note", "  "), 1L, 8L, 2L, 2L)
+  result <- ra(ctx)
+  expect_equal(result$mode, "comment")
+})
+
+test_that("resolve_action - multi-line whitespace selection with code start line, anchor past inline comment -> comment", {
+  ctx    <- make_selection_context(c("x <- 1 # note   ", "  "), 1L, 15L, 2L, 2L)
+  result <- ra(ctx)
+  expect_equal(result$mode, "comment")
+})
+
+test_that("resolve_action - multi-line whitespace selection with code start line -> complete", {
+  ctx    <- make_selection_context(c("x <- 1     ", "  "), 1L, 8L, 2L, 2L)
+  result <- ra(ctx)
+  expect_equal(result$mode, "complete")
 })
 
 
