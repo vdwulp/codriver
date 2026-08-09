@@ -352,6 +352,33 @@ test_that("build_prompt - preamble reports no library calls when none present", 
 })
 
 
+
+# ── Line truncation ───────────────────────────────────────────────────────────
+
+test_that("build_prompt - before: truncates to n_lines from end when context exceeds limit", {
+  # 35 lines > 30-line limit; only last 30 should appear in Code window
+  ctx    <- make_context(c(paste0("line", seq_len(35L)), ""))
+  action <- make_action("continue", position = pos(36L, 1L))
+  bp_mocks({
+    result <- bp(ctx, action)
+    expect_match(result$user, "line35")
+    expect_false(grepl("line1\\b", result$user))
+  })
+})
+
+test_that("build_prompt - after: truncates to n_lines from start when context exceeds limit", {
+  # position at line 1; 15 lines after > 10-line limit for after()
+  ctx    <- make_context(c("x <- 1", paste0("after", seq_len(15L))))
+  action <- make_action("edit", text = "x <- 1", position = pos(1L, 7L),
+                        range = rng(1L, 1L, 1L, 7L))
+  bp_mocks({
+    result <- bp(ctx, action)
+    expect_match(result$user, "after1")
+    expect_false(grepl("after15", result$user))
+  })
+})
+
+
 # ── Block formatting ──────────────────────────────────────────────────────────
 
 test_that("build_prompt - blocks use START/END delimiters", {
