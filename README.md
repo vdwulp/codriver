@@ -3,7 +3,7 @@
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/codriver)](https://CRAN.R-project.org/package=codriver)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/vdwulp/codriver/blob/master/LICENSE.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/vdwulp/codriver/blob/master/LICENSE.md)
 [![R-CMD-check](https://github.com/vdwulp/codriver/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/vdwulp/codriver/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/vdwulp/codriver/branch/main/graph/badge.svg)](https://app.codecov.io/gh/vdwulp/codriver/tree/main)
 <!-- badges: end -->
