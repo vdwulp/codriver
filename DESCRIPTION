@@ -5,7 +5,8 @@ Authors@R: person("S.A.", "van der Wulp", , "vdwulp@gmail.com", role = c("aut", 
 Description: A context-aware AI assistant for 'RStudio' that works directly in
     the source editor without switching context or opening a separate chat
     window. Reads the cursor position and selection to automatically choose the
-    right action - generate, complete, continue, edit, or comment. Supports
+    right action - generate, complete, continue, edit, or comment. Results are
+    presented as ghost text or an in-place diff suggestion. Supports
     configuration of multiple large language model providers and can be invoked
     via the keyboard shortcut or Addins menu.
 URL: https://vdwulp.github.io/codriver/

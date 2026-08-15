@@ -8,13 +8,14 @@
 [![Codecov test coverage](https://codecov.io/gh/vdwulp/codriver/branch/main/graph/badge.svg)](https://app.codecov.io/gh/vdwulp/codriver/tree/main)
 <!-- badges: end -->
 
-*A context-aware AI assistant for RStudio that is literally at your fingertips.*
+*A context-aware AI assistant that sits at your cursor - no chat, no switching.*
 
-Codriver works directly in the RStudio source editor, without switching context
-or opening a separate chat window. When you press the keyboard shortcut,
-codriver reads your cursor position and selection to choose one of five modes —
-complete, generate, continue, edit, or comment — and presents suggestions
-in-place.
+Codriver brings AI code assistance directly to your cursor — no chat window, no
+context switching, no copy-pasting. Press `Ctrl+/` and codriver reads your
+cursor position and selection in the RStudio source editor to automatically
+choose the right action: generate new code from a comment, complete a line,
+continue from context, edit existing code, or suggest a comment. Results appear
+in-place as ghost text or a diff suggestion.
 
 ## 📋 Requirements
 
