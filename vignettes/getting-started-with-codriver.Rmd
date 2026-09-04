@@ -16,13 +16,16 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
-To use codriver you need access to a **large language model (LLM) provider** — a
-cloud service like OpenAI or Anthropic, a model running on your own machine, or
-a proxy provided by your organisation. Codriver supports a wide range of
-providers by building on the [ellmer package](https://ellmer.tidyverse.org).
+To use codriver you need access to a **large language model (LLM)**, either
+through a cloud provider like OpenAI or Anthropic, a model running on your own
+machine, or a proxy provided by your organisation. Codriver supports a wide
+range of providers by building on the [ellmer package](https://ellmer.tidyverse.org).
+
 This article explains how to connect codriver to your provider. It assumes you
-already have access to one — meaning you have signed up, obtained an API key, or
-been given credentials by your organisation.
+already have access to one, meaning you have signed up, obtained an API key, or
+been given credentials by your organisation. If you don't have access yet, see
+[**Free API access**](https://vdwulp.github.io/codriver/articles/free-api-access.html)
+for options that are free to start with.
 
 ------------------------------------------------------------------------
 
@@ -57,8 +60,8 @@ provider-specific notes.
 
 Codriver does not communicate with LLM providers directly. Instead, it relies on
 [**ellmer**](https://ellmer.tidyverse.org), a package that provides a unified
-interface to a wide range of providers. Ellmer supports many popular services —
-OpenAI, Anthropic Claude, Google Gemini, Mistral, Ollama, and more — and handles
+interface to a wide range of providers. Ellmer supports many popular services -
+OpenAI, Anthropic Claude, Google Gemini, Mistral, Ollama, and more - and handles
 the details of authentication and communication for each one.
 
 When you call `codriver::codriver_configure()`, you tell codriver which provider
@@ -68,22 +71,22 @@ can be passed directly through `codriver_configure()`.
 
 | Provider | `name` | Environment variable |
 |---|---|---|
-| OpenAI | `"openai"` | `OPENAI_API_KEY` |
+| OpenAI | `"openai"` | `OPENAI_API_KEY`<br>[see below](#openai) |
+| OpenAI-compatible | `"openai_compatible"` | `OPENAI_API_KEY`<br>[see below](#openai-compatible-endpoint) |
+| Azure OpenAI | `"azure_openai"` | `AZURE_OPENAI_API_KEY`<br>[see below](#azure-openai) |
 | Anthropic | `"anthropic"` | `ANTHROPIC_API_KEY` |
-| Google Gemini | `"google_gemini"` | `GEMINI_API_KEY` |
-| Azure OpenAI | `"azure_openai"` | `AZURE_OPENAI_API_KEY` |
+| Google Gemini | `"google_gemini"` | `GOOGLE_API_KEY`<br>see [Free API access](https://vdwulp.github.io/codriver/articles/free-api-access.html#google-gemini) |
 | AWS Bedrock | `"aws_bedrock"` | *(IAM credentials)* |
 | Databricks | `"databricks"` | `DATABRICKS_TOKEN` |
-| Snowflake | `"snowflake"` | `SNOWFLAKE_TOKEN` |
 | Groq | `"groq"` | `GROQ_API_KEY` |
-| Mistral | `"mistral"` | `MISTRAL_API_KEY` |
-| Perplexity | `"perplexity"` | `PERPLEXITY_API_KEY` |
+| Ollama (local) | `"ollama"` | *(none required)*<br>see [Free API access](https://vdwulp.github.io/codriver/articles/free-api-access.html#ollama) |
 | OpenRouter | `"openrouter"` | `OPENROUTER_API_KEY` |
-| Ollama (local) | `"ollama"` | *(none required)* |
-| LM Studio (local) | `"lmstudio"` | *(none required)* |
-| OpenAI-compatible | `"openai_compatible"` | `OPENAI_API_KEY` |
-> _The table covers providers commonly used. Ellmer supports additional providers
-- see the [ellmer homepage](https://ellmer.tidyverse.org/index.html#providers)
+| LM Studio (local) | `"lmstudio"` | *(none required)*<br>see [Free API access](https://vdwulp.github.io/codriver/articles/free-api-access.html#lm-studio) |
+| Mistral | `"mistral"` | `MISTRAL_API_KEY`<br>see [Free API access](https://vdwulp.github.io/codriver/articles/free-api-access.html#mistral) |
+| Perplexity | `"perplexity"` | `PERPLEXITY_API_KEY` |
+| Snowflake | `"snowflake"` | `SNOWFLAKE_TOKEN` |
+> _The table covers providers commonly used. Ellmer supports additional
+providers. See the [ellmer homepage](https://ellmer.tidyverse.org/index.html#providers)
 for the full and current list._
 
 Most providers require a **model** to be specified, but ellmer will select a
@@ -111,8 +114,8 @@ example, running `?ellmer::chat_openai` in R will tell you that OpenAI expects
 authentication mechanism.
 
 The recommended way to set an environment variable permanently is to add it to
-your `.Renviron` file, which R reads automatically at startup. The example below
-shows how this is done.
+your `.Renviron` file, which R reads automatically at startup. The OpenAI
+example below shows how this is done.
 
 ------------------------------------------------------------------------
 
@@ -137,7 +140,7 @@ Add:
 OPENAI_API_KEY=your_key_here
 ```
 
-Save the file, restart R and then configure codriver:
+Save the file, *restart RStudio* and then configure codriver:
 
 ```{r}
 codriver::codriver_configure("openai", model = "gpt-5.1")
@@ -151,8 +154,8 @@ That is all that is needed. You're now ready to
 ## OpenAI-compatible endpoint
 
 Many organisations run their own LLM infrastructure that speaks the OpenAI API
-format. This includes local model servers, research clusters, and company
-proxies. For these, use `"openai_compatible"` as the provider name.
+format. This includes local model servers, university research clusters, and
+company proxies. For these, use `"openai_compatible"` as the provider name.
 
 Unlike named providers, an OpenAI-compatible endpoint has no defaults. You will
 need to know the **base URL** and **model name** from your organisation's
@@ -178,6 +181,70 @@ variable, which avoids hardcoding keys in your code._
 
 ------------------------------------------------------------------------
 
+## Microsoft Azure OpenAI
+
+Another service regularly used by organisations is `"azure_openai"`. For this
+provider, you always need the **endpoint** of your Azure resource. In addition,
+authentication is handled in one of three ways. Your IT team can tell you which
+authentication method applies and what values to use.
+
+##### Option 1: API key
+
+Set the endpoint and API key in your `.Renviron`:
+```r
+file.edit("~/.Renviron")
+```
+
+Add:
+```
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_API_KEY=*your_key_here*
+```
+
+Save the file, *restart RStudio* and then configure codriver (see below).
+
+##### Option 2: Service principal
+
+Set the endpoint and service principal values in your `.Renviron`:
+```r
+file.edit("~/.Renviron")
+```
+
+Add:
+```
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_TENANT_ID=*your_tenant_id*
+AZURE_CLIENT_ID=*your_client_id*
+AZURE_CLIENT_SECRET=*your_client_secret*
+```
+
+Save the file, *restart RStudio* and then configure codriver (see below).
+
+##### Option 3: Entra ID
+
+Set the endpoint in your `.Renviron`:
+```r
+file.edit("~/.Renviron")
+```
+
+Add:
+```
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+```
+
+Save the file, *restart RStudio* and then configure codriver (see below). When
+none of the other authentication options are used, an *Entra ID* browser login
+will open when configuring codriver.
+
+##### Configure codriver
+
+To configure codriver after setting authentication values, use:
+```r
+codriver::codriver_configure("azure_openai", model = "your-deployment-name")
+```
+
+------------------------------------------------------------------------
+
 ## Provider notes
 
 Some notes on experience with providers:
@@ -189,25 +256,26 @@ Some notes on experience with providers:
   Especially Claude Sonnet 4.5 has been confirmed to work well with codriver.
 - **Google Gemini** produces good results too. When using _free tier_ be aware
   that some models are _very slow_ and only allow for a few requests per day.
-  Gemini 3.1 Flash Lite has been proven to be quick and works well with
-  codriver.
+  Gemini 3.1 Flash Lite and Gemini 3.5 Flash Lite have been proven to be quick
+  and working well with codriver. See [Free API access](https://vdwulp.github.io/codriver/articles/free-api-access.html#google-gemini)
+  for more details.
   
-    The Gemini Flash 2.5 (non-lite) series models use an internal reasoning
-    process that can occasionally cause thought text to appear in completions.
-    If you encounter this, try passing `api_args` to suppress thought output in
-    the response:
+  > The Gemini Flash 2.5 (non-lite) series models use an internal reasoning
+  process that can occasionally cause thought text to appear in completions.
+  If you encounter this, try passing `api_args` to suppress thought output in
+  the response:
   
-    ```{r}
-    codriver::codriver_configure(
-      "google_gemini",
-      model    = "gemini-2.5-flash",
-      api_args = list(
-        generationConfig = list(
-          thinkingConfig = list(includeThoughts = FALSE)
-        )
+  ```{r}
+  codriver::codriver_configure(
+    "google_gemini",
+    model    = "gemini-2.5-flash",
+    api_args = list(
+      generationConfig = list(
+        thinkingConfig = list(includeThoughts = FALSE)
       )
     )
-    ```
+  )
+  ```
 
 ------------------------------------------------------------------------
 

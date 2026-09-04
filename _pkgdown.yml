@@ -15,6 +15,14 @@ home:
         text: |
           - [Getting started](articles/getting-started-with-codriver.html)
           - [Using codriver](articles/start-using-codriver.html)
+          - [Free API access](articles/free-api-access.html)
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - getting-started-with-codriver
+  - start-using-codriver
+  - free-api-access
 authors:
   "S.A. van der Wulp":
     href: https://vdwulp.github.io/

@@ -10,7 +10,7 @@
 
 *A context-aware AI assistant that sits at your cursor - no chat, no switching.*
 
-Codriver brings AI code assistance directly to your cursor — no chat window, no
+Codriver brings AI code assistance directly to your cursor - no chat window, no
 context switching, no copy-pasting. Press `Ctrl+/` and codriver reads your
 cursor position and selection in the RStudio source editor to automatically
 choose the right action: generate new code from a comment, complete a line,
@@ -20,7 +20,9 @@ in-place as ghost text or a diff suggestion.
 ## 📋 Requirements
 
 - RStudio **≥ 2026.04**
-- **API access** to an LLM provider or local model server
+- **API access** to an LLM provider or local model server - see
+  [**Free API access**](https://vdwulp.github.io/codriver/articles/free-api-access.html)
+  for free options
 
 ## ✈️ Installation
 

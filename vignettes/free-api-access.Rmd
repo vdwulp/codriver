@@ -1,0 +1,147 @@
+---
+title: "Free API access"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Free API access}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+*You can use codriver without paying for an API subscription!*
+
+Codriver requires API access to an LLM provider, but isn't tied to a particular
+provider or subscription. There are several free options available: **free API
+access** with a cloud provider, or setting up your own local server. This
+article covers some available options that are free to start with, and some
+considerations of each.
+
+------------------------------------------------------------------------
+
+## Google Gemini
+
+Google offers free API access to Gemini models through
+[Google AI Studio](https://aistudio.google.com). Sign in with a Google account,
+create an API key, and store it in your `.Renviron`:
+```r
+file.edit("~/.Renviron")
+```
+
+Add:
+```
+GOOGLE_API_KEY=*your_key_here*
+```
+
+Save the file, *restart RStudio* and then configure codriver:
+```r
+codriver::codriver_configure("google_gemini", model = "gemini-3.5-flash-lite")
+```
+
+At the time of writing **Gemini 3.1 Flash Lite** or **Gemini 3.5 Flash Lite**
+are the recommended model for codriver on the free tier. These models offers 500
+requests per day each (max. 15 per minute) and respond reasonably quick. Other
+Gemini models on the free tier are either heavily rate-limited or slow enough to
+make interactive use impractical.
+
+> To check current free tier limits, go to
+[Google AI Studio](https://aistudio.google.com) > *Usage & billing* > *Rate
+limits*. Sort by *Category* to find *text-out models*.
+
+On the free tier, Google may use your prompts to improve their models.
+Review [Google's API terms](https://ai.google.dev/gemini-api/terms) before use.
+
+------------------------------------------------------------------------
+
+## Mistral
+
+Mistral AI, a French company, offers a free tier through
+[console.mistral.ai](https://console.mistral.ai). Sign up, create an API key,
+and store it in your `.Renviron`:
+```r
+file.edit("~/.Renviron")
+```
+
+Add:
+```
+MISTRAL_API_KEY=*your_key_here*
+```
+
+Save the file, *restart RStudio* and then configure codriver:
+```r
+codriver::codriver_configure("mistral", model = "mistral-medium-latest")
+```
+
+At the time of writing, **Mistral Medium Latest** is the recommended model for
+codriver on the free tier, but you may run into rate limits. Start with
+`mistral-medium-latest`, and if you run into rate limits, switch to the
+highest-numbered `mistral-medium-*` version available in the model list:
+
+```r
+# Get available models and filter on `mistral-medium-*`
+ellmer::models_mistral() |>
+  dplyr::filter(startsWith(name, "mistral-medium-"))
+
+# Look up highest-numbered `name` and replace `2508` below
+codriver::codriver_configure("mistral", model = "mistral-medium-2508")
+```
+
+The free tier of Mistral comes with the same caveat as Google Gemini: your
+prompts may be used for model training. That said, Mistral is a European company
+subject to EU law, which may be relevant for data governance considerations.
+Check [Mistral's terms of service](https://mistral.ai/terms) for the current
+policy.
+
+------------------------------------------------------------------------
+
+## Local model server
+
+For maximum privacy, run a model locally. [Ollama](https://ollama.com) and
+[LM Studio](https://lmstudio.ai) both provide local model servers that codriver
+can connect to. No API key required, and nothing leaves your machine.
+
+The trade-off is speed and model capability. Local models are generally slower
+and less capable than cloud models, especially on machines without a dedicated
+GPU. For lightweight tasks like completing a short line of code they can work
+well; for more complex generation or editing, results may be less reliable.
+
+##### Ollama
+
+After installing and pulling a model, e.g. `ollama pull codellama`, configure
+codriver:
+```r
+codriver::codriver_configure("ollama", model = "codellama")
+```
+
+##### LM Studio
+
+Start your local server in the [LM Studio](https://lmstudio.ai) app, then
+configure codriver:
+```r
+codriver::codriver_configure("lmstudio", model = "your-loaded-model")
+```
+
+------------------------------------------------------------------------
+
+## Other options
+
+The free tier landscape changes quickly. A few other providers worth knowing
+about:
+
+- **[OpenRouter](https://openrouter.ai)**
+
+  A gateway to many models from different
+  providers, some of which are free. One API key gives access to a wide range of
+  models. Use `"openrouter"` as the provider name in codriver.
+
+- **[Groq](https://console.groq.com)**
+
+  Fast inference on open models like Llama and Mixtral. Free tier available. Use
+  `"groq"` as the provider name in codriver.
