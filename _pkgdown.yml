@@ -31,13 +31,42 @@ home:
           - [Getting started](articles/getting-started-with-codriver.html)
           - [Using codriver](articles/start-using-codriver.html)
           - [Free API access](articles/free-api-access.html)
+
 articles:
-- title: Articles
-  navbar: ~
-  contents:
-  - getting-started-with-codriver
-  - start-using-codriver
-  - free-api-access
+  - title: Articles
+    navbar: ~
+    contents:
+      - getting-started-with-codriver
+      - start-using-codriver
+      - free-api-access
+
+reference:
+  - title: "Intro"
+    desc: >
+      Codriver brings AI code assistance directly to your cursor - no chat
+      window, no context switching, no copy-pasting. It reads the RStudio editor
+      context to determine the right action: generate new code from a comment,
+      complete a line, continue from context, edit existing code, or suggest a
+      comment.
+
+  - title: "Get started"
+    desc: >
+      Use `codriver_configure()` to connect an AI provider and set up the
+      recommended keyboard shortcut. See
+      [Getting started](../articles/getting-started-with-codriver.html) for
+      configuration guidance.
+    contents:
+      - codriver_configure
+
+  - title: "Use codriver"
+    desc: >
+      Invoke codriver from the RStudio Addins menu or with its keyboard shortcut
+      (`Ctrl+/` by default). This function is not normally called directly. See
+      [Using codriver](../articles/start-using-codriver.html) for an overview of
+      modes and result presentation.
+    contents:
+      - codriver
+
 authors:
   "S.A. van der Wulp":
     href: https://vdwulp.github.io/

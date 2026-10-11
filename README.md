@@ -95,7 +95,7 @@ moving the cursor - or as an **edit suggestion** with green/red highlighting -
 accept with `TAB` or _Apply_, dismiss with `Escape` or _Discard_.
 
 See [Using codriver](https://vdwulp.github.io/codriver/articles/start-using-codriver.html)
-for a full walkthrough of all modes and result presentation.
+for a full walk-through of all modes and result presentation.
 
 ## 🔒 Data privacy
 

@@ -13,7 +13,8 @@ URL: https://vdwulp.github.io/codriver/
 BugReports: https://github.com/vdwulp/codriver/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
-Config/roxygen2/version: 8.0.0
+Language: en-US
+Config/roxygen2/version: 8.1.0
 Config/roxygen2/markdown: TRUE
 Config/testthat/edition: 3
 VignetteBuilder: knitr
@@ -32,4 +33,5 @@ Suggests:
     glue,
     knitr,
     rmarkdown,
+    spelling,
     withr

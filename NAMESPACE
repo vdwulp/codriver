@@ -2,27 +2,37 @@
 
 export(codriver)
 export(codriver_configure)
-importFrom(cli,cli_bullets)
-importFrom(cli,cli_progress_done)
-importFrom(cli,cli_progress_message)
+importFrom(cli,
+  cli_bullets,
+  cli_progress_done,
+  cli_progress_message
+)
 importFrom(ellmer,chat)
 importFrom(jsonlite,fromJSON)
-importFrom(rlang,"%||%")
-importFrom(rlang,":=")
-importFrom(rlang,list2)
-importFrom(rstudio.prefs,rstudio_config_path)
-importFrom(rstudio.prefs,use_rstudio_keyboard_shortcut)
-importFrom(rstudioapi,document_position)
-importFrom(rstudioapi,document_range)
-importFrom(rstudioapi,getSourceEditorContext)
-importFrom(rstudioapi,getVersion)
-importFrom(rstudioapi,hasFun)
-importFrom(rstudioapi,insertText)
-importFrom(rstudioapi,isAvailable)
-importFrom(rstudioapi,setCursorPosition)
-importFrom(rstudioapi,showEditSuggestion)
+importFrom(rlang,
+  "%||%",
+  ":=",
+  list2
+)
+importFrom(rstudio.prefs,
+  rstudio_config_path,
+  use_rstudio_keyboard_shortcut
+)
+importFrom(rstudioapi,
+  document_position,
+  document_range,
+  getSourceEditorContext,
+  getVersion,
+  hasFun,
+  insertText,
+  isAvailable,
+  setCursorPosition,
+  showEditSuggestion
+)
 importFrom(stats,setNames)
 importFrom(tools,R_user_dir)
-importFrom(utils,head)
-importFrom(utils,packageVersion)
-importFrom(utils,tail)
+importFrom(utils,
+  head,
+  packageVersion,
+  tail
+)
