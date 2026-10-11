@@ -41,18 +41,17 @@ build_prompt <- function(context, action) {
     result
   }
 
-  # Extract preamble lines: library(), require(), source(), options() calls from
-  # start of file up to position
-  preamble <- function(end = action$position) {
-    if (end[["row"]] > n)
-      end <- rstudioapi::document_position(n, nchar(lines[n]) + 1L)
+  # List packages currently available for unqualified calls
+  attached_packages <- function() {
+    base_packages <- c("stats", "graphics", "grDevices", "utils", "datasets",
+                       "methods", "base")
 
-    range        <- rstudioapi::document_range(rstudioapi::document_position(1L, 1L), end)
-    scoped_lines <- lines_in_range(range)
-    matched      <- scoped_lines[grepl("^\\s*(library|require|source|options)\\s*\\(", scoped_lines)]
+    packages <- grep("^package:", search(), value = TRUE)
+    packages <- sub("^package:", "", packages)
+    packages <- setdiff(packages, base_packages)
 
-    if (length(matched) == 0L) return("No library calls above cursor.")
-    paste(matched, collapse = "\n")
+    if (!length(packages)) return("None beyond R's default packages.")
+    paste(packages, collapse = ", ")
   }
 
   # Lines of context before `end` position
@@ -102,7 +101,7 @@ build_prompt <- function(context, action) {
           "Return only the R code to append at the cursor - nothing else."
         ),
         user = paste(c(
-          block("Preamble",      preamble()),
+          block("Packages available unqualified", attached_packages()),
           block("Workspace",     build_prompt_workspace(c(code_before, code_after))),
           block("Code window",   paste0(code_before, "\u25c0CURSOR\u25b6")),
           if (nzchar(action$text))
@@ -122,7 +121,7 @@ build_prompt <- function(context, action) {
           "Return only valid R code to insert - nothing else."
         ),
         user = paste(c(
-          block("Preamble",      preamble()),
+          block("Packages available unqualified", attached_packages()),
           block("Workspace",     build_prompt_workspace(c(code_before, code_after))),
           block("Code window",   paste0(code_before, "\u25c0CURSOR\u25b6")),
           block("Context after", code_after)
@@ -141,7 +140,7 @@ build_prompt <- function(context, action) {
           "If no changes are advised, return an empty string."
         ),
         user = paste(c(
-          block("Preamble",       preamble()),
+          block("Packages available unqualified", attached_packages()),
           block("Workspace",      build_prompt_workspace(c(code_before, action$text, code_after))),
           block("Context before", code_before),
           block("Target",         action$text),
@@ -161,7 +160,7 @@ build_prompt <- function(context, action) {
           "Return only the R code to insert - nothing else."
         ),
         user = paste(c(
-          block("Preamble",       preamble()),
+          block("Packages available unqualified", attached_packages()),
           block("Workspace",      build_prompt_workspace(c(code_before, code_after))),
           block("Context before", code_before),
           block("Instruction",    action$text),

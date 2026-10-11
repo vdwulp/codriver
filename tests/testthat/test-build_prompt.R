@@ -328,29 +328,46 @@ test_that("build_prompt - comment: user prompt contains Context after content", 
 })
 
 
-# ── Preamble extraction ───────────────────────────────────────────────────────
+# ── Attached packages ────────────────────────────────────────────────────────
 
-test_that("build_prompt - preamble includes library() calls", {
-  ctx    <- make_context(c("library(dplyr)", "library(ggplot2)", "x <- 1", "x <- x + 1"))
-  action <- make_action("edit", text = "x <- x + 1", position = pos(4L, 1L),
-                        range = rng(4L, 1L, 4L, 11L))
+test_that("build_prompt reports packages available unqualified", {
+  ctx <- make_context(c("library(dplyr)", "x <- 1", "x <- x + 1"))
+  action <- make_action("edit", text = "x <- x + 1", position = pos(3L, 1L),
+                        range = rng(3L, 1L, 3L, 11L))
   bp_mocks({
-    result <- bp(ctx, action)
-    expect_match(result$user, "library\\(dplyr\\)")
-    expect_match(result$user, "library\\(ggplot2\\)")
+    with_mocked_bindings(
+      search = function(...) c(".GlobalEnv", "package:stats", "package:utils",
+                               "package:base", "package:mock-attached-package"),
+      .package = "base",
+      {
+        result <- bp(ctx, action)
+        expect_match(result$user, "Packages available unqualified")
+        expect_match(result$user, "mock-attached-package")
+        expect_no_match(result$user, "\\.GlobalEnv")
+        expect_no_match(result$user, "stats")
+        expect_no_match(result$user, "utils")
+        expect_no_match(result$user, "base")
+      }
+    )
   })
 })
 
-test_that("build_prompt - preamble reports no library calls when none present", {
+test_that("build_prompt reports when no additional packages are attached", {
   ctx    <- make_context(c("x <- 1", "x <- x + 1"))
   action <- make_action("edit", text = "x <- x + 1", position = pos(2L, 1L),
                         range = rng(2L, 1L, 2L, 11L))
   bp_mocks({
-    result <- bp(ctx, action)
-    expect_match(result$user, "No library calls")
+    with_mocked_bindings(
+      search = function(...) character(),
+      .package = "base",
+      {
+        result <- bp(ctx, action)
+        expect_match(result$user, "Packages available unqualified")
+        expect_match(result$user, "None beyond R's default packages\\.")
+      }
+    )
   })
 })
-
 
 
 # ── Line truncation ───────────────────────────────────────────────────────────
