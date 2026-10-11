@@ -108,6 +108,15 @@ proprietary information.
 
 Please review your provider's data policy before use.
 
+## 🔎 Diagnostics
+
+For diagnostic information about configuration, versions, and token usage, run
+[`codriver_info()`](https://vdwulp.github.io/codriver/reference/codriver_info.html):
+
+```r
+codriver::codriver_info()
+```
+
 ## 📄 License
 
 MIT License, see [LICENSE](https://github.com/vdwulp/codriver/blob/master/LICENSE.md) file.

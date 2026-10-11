@@ -2,6 +2,7 @@
 
 export(codriver)
 export(codriver_configure)
+export(codriver_info)
 importFrom(cli,
   cli_bullets,
   cli_progress_done,
@@ -32,6 +33,7 @@ importFrom(rstudioapi,
 importFrom(stats,setNames)
 importFrom(tools,R_user_dir)
 importFrom(utils,
+  capture.output,
   head,
   packageVersion,
   tail

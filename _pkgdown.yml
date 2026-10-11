@@ -67,6 +67,13 @@ reference:
     contents:
       - codriver
 
+  - title: "Diagnostics"
+    desc: >
+      Display the active codriver configuration, package and R/RStudio
+      environment details, and token usage for the active ellmer session.
+    contents:
+      - codriver_info
+
 authors:
   "S.A. van der Wulp":
     href: https://vdwulp.github.io/
