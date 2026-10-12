@@ -11,6 +11,10 @@
   configuration, R/RStudio environment details, and token usage for the active
   ellmer session.
 
+* New function `codriver::codriver_last_chat()` returns the system prompt, user
+  prompt, and raw assistant response from the most recent codriver request in
+  the current R session.
+
 ### Other
 
 * Increased test coverage to 100%.
