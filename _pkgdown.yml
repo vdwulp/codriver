@@ -69,10 +69,11 @@ reference:
 
   - title: "Diagnostics"
     desc: >
-      Display the active codriver configuration, package and R/RStudio
-      environment details, and token usage for the active ellmer session.
+      Inspect codriver's configuration and environment, or review the prompts
+      and raw response from the most recent chat.
     contents:
       - codriver_info
+      - codriver_last_chat
 
 authors:
   "S.A. van der Wulp":

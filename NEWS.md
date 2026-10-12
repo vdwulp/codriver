@@ -7,7 +7,7 @@
   above the cursor, which may not have been executed, and gives the LLM a more
   accurate signal about the packages available to generated code.
 
-* New function `codriver::codriver_info()` prints the codriver version, active
+* New function `codriver::codriver_info()` collects the codriver version, active
   configuration, R/RStudio environment details, and token usage for the active
   ellmer session.
 

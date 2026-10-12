@@ -2,19 +2,18 @@
 % Please edit documentation in R/info.R
 \name{codriver_info}
 \alias{codriver_info}
-\title{Print codriver diagnostic information}
+\title{Collect codriver diagnostic information}
 \usage{
 codriver_info()
 }
 \value{
-Invisibly returns a named list with elements \code{version},
-\code{configuration}, \code{environment} (a named list with \code{r},
-\code{rstudio}, \code{rstudioapi}, and \code{ellmer}), and
-\code{token_usage} (a tibble, or \code{NULL} if ellmer is not installed or
-no usage has been recorded). Called for its side effect of printing
-diagnostic information.
+A \code{codriver_info} object: a named list with elements
+\code{version}, \code{configuration}, \code{environment} (a named list
+with \code{r}, \code{rstudio}, \code{rstudioapi}, and \code{ellmer}), and
+\code{token_usage} (a tibble, or \code{NULL} if \pkg{ellmer} is not
+installed or no usage has been recorded).
 }
 \description{
-Displays the current package version, active configuration, R/RStudio
+Collects the current package version, active configuration, R/RStudio
 environment details, and token usage for the active \pkg{ellmer} session.
 }

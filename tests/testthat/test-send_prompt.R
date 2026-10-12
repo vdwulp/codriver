@@ -247,7 +247,7 @@ test_that("set_last_chat - resets response when prompts are supplied", {
         system_prompt = "new system",
         user_prompt = "new user"
       ),
-      class = c("codriver_last_chat", "list")
+      class = "codriver_last_chat"
     )
   )
   expect_false("assistant_response" %in% names(codriver_last_chat()))
@@ -268,7 +268,7 @@ test_that("set_last_chat - preserves prompts when response is supplied", {
         user_prompt = "user",
         assistant_response = "assistant"
       ),
-      class = c("codriver_last_chat", "list")
+      class = "codriver_last_chat"
     )
   )
 })
@@ -316,7 +316,7 @@ test_that("send_prompt - records the most recent chat with raw response", {
         user_prompt = "usr",
         assistant_response = raw_response
       ),
-      class = c("codriver_last_chat", "list")
+      class = "codriver_last_chat"
     )
   )
 })

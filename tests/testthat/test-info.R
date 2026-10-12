@@ -5,7 +5,8 @@ run_codriver_info <- function(config_args = NULL) {
     get_config = function() list(args = config_args),
     .package = "codriver",
     code = {
-      output <- capture.output(value <- codriver_info())
+      value <- codriver_info()
+      output <- capture.output(print(value))
       list(value = value, output = output)
     }
   )
@@ -40,9 +41,10 @@ test_that("codriver_info - prints diagnostic sections when not configured", {
   expect_true(startsWith(tail(result$output, 1), "\u2500"))
 })
 
-test_that("codriver_info - invisibly returns diagnostic information", {
+test_that("codriver_info - returns diagnostic information", {
   result <- run_codriver_info()
 
+  expect_s3_class(result$value, "codriver_info")
   expect_named(
     result$value,
     c("version", "configuration", "environment", "token_usage")

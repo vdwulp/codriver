@@ -109,8 +109,8 @@ send_prompt <- function(context, action, prompt) {
 #' Returns the prompts and raw assistant response recorded for the most recent
 #' codriver request in the current R session.
 #'
-#' @return A named list, or \code{NULL} if no chat has been recorded. The
-#'   returned list may contain:
+#' @return A \code{codriver_last_chat} object or \code{NULL} if no chat has been
+#'   recorded. The object is a named list that may contain:
 #'   \describe{
 #'     \item{system_prompt}{The system prompt used for the request.}
 #'     \item{user_prompt}{The user prompt sent to the language model.}
@@ -123,7 +123,7 @@ codriver_last_chat <- function() {
   last_chat <- .codriver_env$last_chat
 
   if (!is.null(last_chat)) {
-    class(last_chat) <- c("codriver_last_chat", "list")
+    class(last_chat) <- "codriver_last_chat"
   }
 
   last_chat

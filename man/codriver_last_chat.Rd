@@ -7,15 +7,16 @@
 codriver_last_chat()
 }
 \value{
-A named list, or \code{NULL} if no chat has been recorded. The
-returned list contains:
+A \code{codriver_last_chat} object or \code{NULL} if no chat has been
+recorded. The object is a named list that may contain:
 \describe{
 \item{system_prompt}{The system prompt used for the request.}
 \item{user_prompt}{The user prompt sent to the language model.}
-\item{assistant_response}{The response returned by the language model.}
+\item{assistant_response}{The raw response returned by the language
+model.}
 }
 }
 \description{
-Returns the prompts and assistant response recorded for the most recent
+Returns the prompts and raw assistant response recorded for the most recent
 codriver request in the current R session.
 }
