@@ -32,8 +32,10 @@
 #'
 #' @examples
 #' \dontrun{
-#'   codriver_configure("openai", model = "gpt-4o")
-#'   codriver_configure("openai_compatible/mistral", base_url = "http://localhost:1234/v1")
+#'   codriver_configure("openai",
+#'                      model = "gpt-4o")
+#'   codriver_configure("openai_compatible/mistral",
+#'                      base_url = "http://localhost:1234/v1")
 #' }
 #'
 #' @importFrom cli cli_bullets cli_progress_done cli_progress_message

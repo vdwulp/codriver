@@ -1,14 +1,13 @@
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-configure_mocks <- function(
-    rstudio_ok    = TRUE,
-    shortcut      = "Ctrl+/",
-    chat_ok       = TRUE,
-    chat_fn       = NULL,
-    shortcut_fn   = function(...) TRUE,
-    set_config_fn = function(...) invisible(NULL),
-    name          = "openai",
-    ...) {
+configure_mocks <- function(rstudio_ok    = TRUE,
+                            shortcut      = "Ctrl+/",
+                            chat_ok       = TRUE,
+                            chat_fn       = NULL,
+                            shortcut_fn   = function(...) TRUE,
+                            set_config_fn = function(...) invisible(NULL),
+                            name          = "openai",
+                            ...) {
 
   env         <- new.env(parent = emptyenv())
   env$bullets <- NULL
@@ -20,7 +19,9 @@ configure_mocks <- function(
     env$bullets <- c(env$bullets, x)
   }
 
-  actual_chat_fn <- chat_fn %||% function(...) if (chat_ok) fake_chat else stop("chat failed")
+  actual_chat_fn <- chat_fn %||% function(...) {
+    if (chat_ok) fake_chat else stop("chat failed")
+  }
 
   result <- with_mocked_bindings(
     check_rstudio          = function() rstudio_ok,
@@ -64,7 +65,10 @@ test_that("codriver_configure - openai_compatible merges model into name", {
     name          = "openai_compatible",
     base_url      = "https://example.com/v1",
     model         = "custom-model",
-    set_config_fn = function(cfg) { recorded <<- cfg; invisible(NULL) }
+    set_config_fn = function(cfg) {
+      recorded <<- cfg
+      invisible(NULL)
+    }
   )
   expect_true(out$result)
   expect_equal(recorded$args$name, "openai_compatible/custom-model")
@@ -77,7 +81,10 @@ test_that("codriver_configure - openai_compatible/model slash syntax keeps name"
   out <- configure_mocks(
     name          = "openai_compatible/custom-model",
     base_url      = "https://example.com/v1",
-    set_config_fn = function(cfg) { recorded <<- cfg; invisible(NULL) }
+    set_config_fn = function(cfg) {
+      recorded <<- cfg
+      invisible(NULL)
+    }
   )
   expect_true(out$result)
   expect_equal(recorded$args$name, "openai_compatible/custom-model")
@@ -92,7 +99,10 @@ test_that("codriver_configure - offers and registers default shortcut when none 
   configure_mocks(
     shortcut    = NULL,
     model       = "gpt-4",
-    shortcut_fn = function(s) { registered_shortcut <<- s; TRUE }
+    shortcut_fn = function(s) {
+      registered_shortcut <<- s
+      TRUE
+    }
   )
   expect_equal(registered_shortcut, "Ctrl+/")
 })
@@ -112,7 +122,10 @@ test_that("codriver_configure - skips shortcut registration when already registe
   configure_mocks(
     shortcut    = "Ctrl+/",
     model       = "gpt-4",
-    shortcut_fn = function(...) { registered_called <<- TRUE; TRUE }
+    shortcut_fn = function(...) {
+      registered_called <<- TRUE
+      TRUE
+    }
   )
   expect_false(registered_called)
 })
@@ -140,7 +153,10 @@ test_that("codriver_configure - recommends manual assignment when shortcut clear
   out <- configure_mocks(
     shortcut    = "",
     model       = "gpt-4",
-    shortcut_fn = function(...) { registered_called <<- TRUE; TRUE }
+    shortcut_fn = function(...) {
+      registered_called <<- TRUE
+      TRUE
+    }
   )
   expect_false(registered_called)
   expect_true(any(grepl("Modify Keyboard Shortcuts", out$bullets)))
@@ -152,7 +168,9 @@ test_that("codriver_configure - recommends manual assignment when shortcut clear
 test_that("codriver_configure - strips ANSI codes from error message", {
   out <- configure_mocks(
     model   = "gpt-4",
-    chat_fn = function(...) list(chat = function(...) stop("\033[31msome error\033[0m"))
+    chat_fn = function(...) {
+      list(chat = function(...) stop("\033[31msome error\033[0m"))
+    }
   )
   expect_true(any(grepl("Configuration failed", out$bullets)))
   expect_false(any(grepl("\033", out$bullets, fixed = TRUE)))
@@ -162,9 +180,12 @@ test_that("codriver_configure - strips openai_compatible hint from error message
   out <- configure_mocks(
     name     = "openai_compatible",
     base_url = "https://example.com/v1",
-    chat_fn  = function(...) list(chat = function(...) stop(
-      "bad request\n\u2139 Use `chat_openai()` if you want to use OpenAI's official API."
-    ))
+    chat_fn  = function(...) {
+      list(chat = function(...) {
+        stop(paste("bad request\n\u2139 Use `chat_openai()`",
+                   "if you want to use OpenAI's official API."))
+      })
+    }
   )
   expect_true(any(grepl("Configuration failed", out$bullets)))
   expect_false(any(grepl("chat_openai\\(", out$bullets)))
@@ -196,7 +217,8 @@ test_that("read_config - returns NULL when file does not exist", {
 test_that("read_config - reads back a saved config", {
   mock_dir <- tempfile("codriver_test")
   dir.create(mock_dir, recursive = TRUE)
-  saveRDS(list(args = list(name = "openai/gpt-4")), file.path(mock_dir, "config.rds"))
+  saveRDS(list(args = list(name = "openai/gpt-4")),
+          file.path(mock_dir, "config.rds"))
   local_mocked_bindings(
     R_user_dir = function(package, which) mock_dir,
     .package   = "codriver"
@@ -210,23 +232,28 @@ test_that("read_config - reads back a saved config", {
 test_that("write_config - persists config as RDS", {
   mock_dir <- tempfile("codriver_test")
   dir.create(mock_dir, recursive = TRUE)
-  local_mocked_bindings(R_user_dir = function(package, which) mock_dir, .package = "codriver")
+  local_mocked_bindings(R_user_dir = function(package, which) mock_dir,
+                        .package = "codriver")
   write_config(list(args = list(name = "openai/gpt-4")))
-  expect_equal(readRDS(file.path(mock_dir, "config.rds"))$args$name, "openai/gpt-4")
+  expect_equal(readRDS(file.path(mock_dir, "config.rds"))$args$name,
+               "openai/gpt-4")
 })
 
 test_that("write_config - overwrites existing file", {
   mock_dir <- tempfile("codriver_test")
   dir.create(mock_dir, recursive = TRUE)
-  local_mocked_bindings(R_user_dir = function(package, which) mock_dir, .package = "codriver")
+  local_mocked_bindings(R_user_dir = function(package, which) mock_dir,
+                        .package = "codriver")
   write_config(list(args = list(name = "openai")))
   write_config(list(args = list(name = "anthropic")))
-  expect_equal(readRDS(file.path(mock_dir, "config.rds"))$args$name, "anthropic")
+  expect_equal(readRDS(file.path(mock_dir, "config.rds"))$args$name,
+               "anthropic")
 })
 
 test_that("write_config - creates directory if missing", {
   mock_dir <- tempfile("codriver_test")
-  local_mocked_bindings(R_user_dir = function(package, which) mock_dir, .package = "codriver")
+  local_mocked_bindings(R_user_dir = function(package, which) mock_dir,
+                        .package = "codriver")
   expect_false(dir.exists(mock_dir))
   write_config(list(args = list(name = "openai")))
   expect_true(dir.exists(mock_dir))
@@ -258,18 +285,21 @@ test_that("set_config - writes to disk and updates in-memory cache", {
   reset_config()
   mock_dir <- tempfile("codriver_test")
   dir.create(mock_dir, recursive = TRUE)
-  local_mocked_bindings(R_user_dir = function(package, which) mock_dir, .package = "codriver")
+  local_mocked_bindings(R_user_dir = function(package, which) mock_dir,
+                        .package = "codriver")
   set_config(list(args = list(name = "anthropic/claude-3")))
   env <- get(".codriver_env", envir = asNamespace("codriver"))
   expect_equal(env$config$args$name, "anthropic/claude-3")
-  expect_equal(readRDS(file.path(mock_dir, "config.rds"))$args$name, "anthropic/claude-3")
+  expect_equal(readRDS(file.path(mock_dir, "config.rds"))$args$name,
+               "anthropic/claude-3")
 })
 
 test_that("set_config - replaces entire config (no partial merge)", {
   reset_config()
   mock_dir <- tempfile("codriver_test")
   dir.create(mock_dir, recursive = TRUE)
-  local_mocked_bindings(R_user_dir = function(package, which) mock_dir, .package = "codriver")
+  local_mocked_bindings(R_user_dir = function(package, which) mock_dir,
+                        .package = "codriver")
   env <- get(".codriver_env", envir = asNamespace("codriver"))
   env$config <- list(args = list(name = "openai/gpt-4"))
   set_config(list(args = list(name = "anthropic/claude-3")))
@@ -284,28 +314,34 @@ test_that("set_config - requires a list", {
 # ── is_shortcut_registered ────────────────────────────────────────────────────
 
 test_that("is_shortcut_registered - returns NULL when addins.json missing", {
-  local_mocked_bindings(rstudio_config_path = function(...) tempfile(), .package = "codriver")
+  local_mocked_bindings(rstudio_config_path = function(...) tempfile(),
+                        .package = "codriver")
   expect_null(is_shortcut_registered())
 })
 
 test_that("is_shortcut_registered - returns shortcut string when codriver::codriver is present", {
   tmp <- tempfile(fileext = ".json")
-  jsonlite::write_json(list(`codriver::codriver` = "Ctrl+/"), tmp, auto_unbox = TRUE)
-  local_mocked_bindings(rstudio_config_path = function(...) tmp, .package = "codriver")
+  jsonlite::write_json(list(`codriver::codriver` = "Ctrl+/"),
+                       tmp,
+                       auto_unbox = TRUE)
+  local_mocked_bindings(rstudio_config_path = function(...) tmp,
+                        .package = "codriver")
   expect_equal(is_shortcut_registered(), "Ctrl+/")
 })
 
 test_that("is_shortcut_registered - returns NULL when codriver::codriver is absent", {
   tmp <- tempfile(fileext = ".json")
   jsonlite::write_json(list(`other::addin` = "Ctrl-K"), tmp, auto_unbox = TRUE)
-  local_mocked_bindings(rstudio_config_path = function(...) tmp, .package = "codriver")
+  local_mocked_bindings(rstudio_config_path = function(...) tmp,
+                        .package = "codriver")
   expect_null(is_shortcut_registered())
 })
 
 test_that("is_shortcut_registered - returns empty string when codriver::codriver is cleared", {
   tmp <- tempfile(fileext = ".json")
   jsonlite::write_json(list(`codriver::codriver` = ""), tmp, auto_unbox = TRUE)
-  local_mocked_bindings(rstudio_config_path = function(...) tmp, .package = "codriver")
+  local_mocked_bindings(rstudio_config_path = function(...) tmp,
+                        .package = "codriver")
   expect_equal(is_shortcut_registered(), "")
 })
 

@@ -65,9 +65,6 @@ resolve_action <- function(context) {
   # Checks if a string is whitespace only
   is_whitespace <- function(s) grepl("^\\s*$", s)
 
-  # Returns an rstudioapi-range spanning from/to just one position
-  point_range <- function(pos) rstudioapi::document_range(pos, pos)
-
   # Returns an rstudioapi-range spanning the full 'line' on the 'row'
   line_range <- function(row, line) {
     rstudioapi::document_range(
@@ -84,7 +81,7 @@ resolve_action <- function(context) {
 
     for (tok in c("%>", "%")) {
       if (endsWith(left_trim, tok)) {
-        if (tok == "%" && endsWith(left_trim, ">%")) next  # % is not a partial pipe
+        if (tok == "%" && endsWith(left_trim, ">%")) next # % not a partial pipe
         token <- tok
         break
       }
@@ -108,14 +105,20 @@ resolve_action <- function(context) {
   comment_action <- function(row, comment_column) {
     line        <- context$contents[row]
     comment_col <- comment_column +
-      if (substr(line, comment_column + 1L, comment_column + 1L) == " ") 2L else 1L
+      if (substr(line, comment_column + 1L, comment_column + 1L) == " ") 2L
+      else 1L
     pos <- rstudioapi::document_position(row, comment_col)
 
     list(
       mode     = "comment",
-      text     = c(trimws(substr(line, 1L, comment_column - 1L)),
-                   strip_comment_markers(substr(line, comment_column, nchar(line)))),
-      range    = rstudioapi::document_range(pos, rstudioapi::document_position(row, nchar(line) + 1L)),
+      text     = c(
+        trimws(substr(line, 1L, comment_column - 1L)),
+        strip_comment_markers(substr(line, comment_column, nchar(line)))
+      ),
+      range    = rstudioapi::document_range(
+        pos,
+        rstudioapi::document_position(row, nchar(line) + 1L)
+      ),
       position = pos
     )
   }
@@ -144,7 +147,8 @@ resolve_action <- function(context) {
       prev_row  <- cursor_row - 1L
       prev_line <- if (cursor_row > 1L) context$contents[prev_row] else ""
 
-      # Cursor on an empty line with a comment directly above -> generate from that comment
+      # Cursor on an empty line with a comment directly above -> generate from
+      # that comment
       if (cursor_row > 1L && is_comment_row(prev_row)) {
         return(list(
           mode     = "generate",
@@ -211,7 +215,8 @@ resolve_action <- function(context) {
         prev_row  <- start[["row"]] - 1L
         prev_line <- if (start[["row"]] > 1L) context$contents[prev_row] else ""
 
-        # Whitespace selection on an empty line with a comment directly above -> generate from that comment
+        # Whitespace selection on an empty line with a comment directly above ->
+        # generate from that comment
         if (start[["row"]] > 1L && is_comment_row(prev_row)) {
           return(list(
             mode     = "generate",
@@ -221,7 +226,8 @@ resolve_action <- function(context) {
           ))
         }
 
-        # Whitespace selection on an empty line with *no* comment directly above -> continue
+        # Whitespace selection on an empty line with *no* comment directly above
+        # -> continue
         return(list(
           mode     = "continue",
           position = rstudioapi::document_position(start[["row"]], 1L)
@@ -245,7 +251,8 @@ resolve_action <- function(context) {
       ))
     }
 
-    # Non-whitespace selection on a code line and starts with or is preceded by '#' -> comment
+    # Non-whitespace selection on a code line and starts with or is preceded
+    # by '#' -> comment
     comment_column <- get_comment_column(start[["row"]])
     if (!is.null(comment_column) && start[["column"]] >= comment_column) {
       return(comment_action(start[["row"]], comment_column))
@@ -309,7 +316,8 @@ resolve_action <- function(context) {
       instruction <- paste(block_lines, collapse = "\n")
 
       anchor_line     <- context$contents[anchor_row]
-      range_start_col <- if (block_start_row == start[["row"]]) start[["column"]] else 1L
+      range_start_col <-
+        if (block_start_row == start[["row"]]) start[["column"]] else 1L
 
       return(list(
         mode     = "generate",
@@ -325,7 +333,8 @@ resolve_action <- function(context) {
 
       # Anchor is code line
 
-      # Selection starts on a code line and starts with or is preceded by '#' -> comment
+      # Selection starts on a code line and starts with or is preceded by '#'
+      # -> comment
       if (anchor_row == start[["row"]]) {
         anchor_line    <- context$contents[anchor_row]
         comment_column <- get_comment_column(anchor_row)
@@ -345,7 +354,10 @@ resolve_action <- function(context) {
         actual_end_line <- context$contents[actual_end_row]
         edit_range <- rstudioapi::document_range(
           start,
-          rstudioapi::document_position(actual_end_row, nchar(actual_end_line) + 1L)
+          rstudioapi::document_position(
+            actual_end_row,
+            nchar(actual_end_line) + 1L
+          )
         )
       }
 
@@ -387,11 +399,10 @@ resolve_action <- function(context) {
   }
 
   # Start line is an empty line -> continue
-  return(list(
+  list(
     mode     = "continue",
     position = rstudioapi::document_position(start[["row"]], 1L)
-  ))
-
+  )
 }
 
 #' Scan contents for comment markers not in strings
@@ -406,9 +417,9 @@ resolve_action <- function(context) {
 #'   \item \code{-1} — no comment on this line
 #' }
 #'
-#' State machine approach focussed on tracking string state and finding the first
-#' comment marker on each line. Keeps a running state across lines during the
-#' scan (not stored, discarded after scan):
+#' State machine approach focussed on tracking string state and finding the
+#' first comment marker on each line. Keeps a running state across lines during
+#' the scan (not stored, discarded after scan):
 #'   state      0 = code, 1 = regular/backtick string, 2 = raw string
 #'   quote      opening quote char when state == 1
 #'   raw_close  closing pattern string when state == 2, e.g. `)--"`
@@ -452,7 +463,7 @@ scan_lines <- function(lines, end_row) {
           esc   <- FALSE
 
         } else if ((ch == "r" || ch == "R") && i + 1L <= n &&
-                   (chars[i + 1L] == '"' || chars[i + 1L] == "'")) {
+                     (chars[i + 1L] == '"' || chars[i + 1L] == "'")) {
           # Peek ahead to possible raw string, format r"<padding><bracket>
           # - R upper/lower case
           # - Single/double quotes,

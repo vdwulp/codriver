@@ -59,7 +59,8 @@ check_rstudio <- function() {
         c("v" = "rstudioapi: OK")
       } else {
         c("x" = paste0(
-          "rstudioapi: TOO OLD - run install.packages(\"rstudioapi\") (you have ",
+          "rstudioapi: TOO OLD - run install.packages(\"rstudioapi\") ",
+          "(you have ",
           as.character(rsapi_version),
           ", need ",
           as.character(req_rsapi_edit),

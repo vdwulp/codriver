@@ -102,8 +102,9 @@ build_prompt <- function(context, action) {
         ),
         user = paste(c(
           block("Packages available unqualified", attached_packages()),
-          block("Workspace",     build_prompt_workspace(c(code_before, code_after))),
-          block("Code window",   paste0(code_before, "\u25c0CURSOR\u25b6")),
+          block("Workspace",
+                build_prompt_workspace(c(code_before, code_after))),
+          block("Code window", paste0(code_before, "\u25c0CURSOR\u25b6")),
           if (nzchar(action$text))
             c(sprintf("RULE: The code must start with %s", action$text), ""),
           block("Context after", code_after)
@@ -122,8 +123,9 @@ build_prompt <- function(context, action) {
         ),
         user = paste(c(
           block("Packages available unqualified", attached_packages()),
-          block("Workspace",     build_prompt_workspace(c(code_before, code_after))),
-          block("Code window",   paste0(code_before, "\u25c0CURSOR\u25b6")),
+          block("Workspace",
+                build_prompt_workspace(c(code_before, code_after))),
+          block("Code window", paste0(code_before, "\u25c0CURSOR\u25b6")),
           block("Context after", code_after)
         ), collapse = "\n")
       )
@@ -141,10 +143,13 @@ build_prompt <- function(context, action) {
         ),
         user = paste(c(
           block("Packages available unqualified", attached_packages()),
-          block("Workspace",      build_prompt_workspace(c(code_before, action$text, code_after))),
+          block("Workspace",
+                build_prompt_workspace(
+                  c(code_before, action$text, code_after)
+                )),
           block("Context before", code_before),
-          block("Target",         action$text),
-          block("Context after",  code_after)
+          block("Target", action$text),
+          block("Context after", code_after)
         ), collapse = "\n")
       )
     },
@@ -161,10 +166,11 @@ build_prompt <- function(context, action) {
         ),
         user = paste(c(
           block("Packages available unqualified", attached_packages()),
-          block("Workspace",      build_prompt_workspace(c(code_before, code_after))),
+          block("Workspace",
+                build_prompt_workspace(c(code_before, code_after))),
           block("Context before", code_before),
-          block("Instruction",    action$text),
-          block("Context after",  code_after)
+          block("Instruction", action$text),
+          block("Context after", code_after)
         ), collapse = "\n")
       )
     },
@@ -176,11 +182,11 @@ build_prompt <- function(context, action) {
         "Return 1 to 5 words, no leading '#' - nothing else."
       ),
       user = paste(c(
-        block("Context before",  before(10L)),
+        block("Context before", before(10L)),
         block("Code to comment", action$text[1]),
         if (nzchar(action$text[2]))
-          block("Suggestion",    action$text[2]),
-        block("Context after",   after(10L))
+          block("Suggestion", action$text[2]),
+        block("Context after", after(10L))
       ), collapse = "\n")
     ),
 

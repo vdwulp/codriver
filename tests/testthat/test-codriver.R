@@ -127,7 +127,9 @@ test_that("codriver - emits correct message for edit mode without newlines", {
 })
 
 test_that("codriver - emits correct message for comment mode without original text", {
-  result <- run_codriver(mode = "comment", action_text = "x <- 1", comment_text = "")
+  result <- run_codriver(mode = "comment",
+                         action_text = "x <- 1",
+                         comment_text = "")
 
   expect_true(length(result$messages) >= 1L)
   expect_equal(

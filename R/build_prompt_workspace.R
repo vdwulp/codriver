@@ -18,7 +18,9 @@ build_prompt_workspace <- function(text, env = globalenv()) {
   if (length(all_names) == 0L) return("")
 
   # Extract tokens that match an object name in the global environment
-  tokens    <- strsplit(paste(text, collapse = "\n"), "[^A-Za-z0-9._]+", perl = TRUE)[[1L]]
+  tokens    <- strsplit(paste(text, collapse = "\n"),
+                        "[^A-Za-z0-9._]+",
+                        perl = TRUE)[[1L]]
   mentioned <- unique(tokens[tokens %in% all_names])
 
   # Determine how many unreferenced objects to include
@@ -52,17 +54,31 @@ build_prompt_workspace <- function(text, env = globalenv()) {
   # unreferenced objects get simple descriptions when at least one referenced
   # objects exists, full descriptions otherwise.
   targets <- c(
-    if (length(mentioned)     > 0L) setNames(rep(FALSE,                  length(mentioned)),     mentioned),
-    if (length(unreferenced)  > 0L) setNames(rep(length(mentioned) > 0L, length(unreferenced)),  unreferenced)
+    if (length(mentioned) > 0L)
+      setNames(rep(FALSE, length(mentioned)), mentioned),
+    if (length(unreferenced) > 0L)
+      setNames(rep(length(mentioned) > 0L, length(unreferenced)), unreferenced)
   )
 
   # Get primary class and description of targets
-  classes  <- vapply(names(targets), function(n) class(get(n, envir = env))[1L], character(1L))
-  descs    <- vapply(names(targets), function(n) describe_variable(get(n, envir = env), n, simple = targets[[n]]), character(1L))
+  classes <- vapply(names(targets),
+                    function(n) class(get(n, envir = env))[1L],
+                    character(1L))
+  descs <- vapply(names(targets),
+                  function(n) {
+                    describe_variable(get(n, envir = env),
+                                      n,
+                                      simple = targets[[n]])
+                  },
+                  character(1L))
 
   # Build one line per class: "class: desc | desc | ..."
   by_class <- split(descs, classes)
-  lines    <- mapply(function(cls, ds) paste0(cls, ": ", paste(ds, collapse = " | ")), names(by_class), by_class)
+  lines <- mapply(
+    function(cls, ds) paste0(cls, ": ", paste(ds, collapse = " | ")),
+    names(by_class),
+    by_class
+  )
   paste(lines, collapse = "\n")
 }
 
@@ -105,7 +121,8 @@ describe_variable <- function(x, name, simple = FALSE) {
         paste0(type, ": ", col_str)
       }, character(1L))
 
-      paste0(name, " [", nrow(x), "x", ncol(x), " ", paste(type_strs, collapse = " | "), "]")
+      paste0(name, " [", nrow(x), "x", ncol(x), " ",
+             paste(type_strs, collapse = " | "), "]")
     }
 
   } else {
@@ -116,7 +133,10 @@ describe_variable <- function(x, name, simple = FALSE) {
       # Named object -> group elements by type
       types   <- vapply(nms, function(n) class(x[[n]])[1L], character(1L))
       by_type <- split(nms, types)
-      items   <- paste(names(by_type), vapply(by_type, paste, character(1L), collapse = ", "), sep = ": ", collapse = " | ")
+      items   <- paste(names(by_type),
+                       vapply(by_type, paste, character(1L), collapse = ", "),
+                       sep = ": ",
+                       collapse = " | ")
       paste0(name, " [", length(x), " ", items, "]")
 
     } else {
@@ -159,7 +179,7 @@ describe_columns <- function(cols) {
   tokenize_colname <- function(x) {
     x <- gsub("([a-z])([A-Z])", "\\1 \\2", x)        # camelCase or PascalCase
     x <- gsub("([A-Z]+)([A-Z][a-z])", "\\1 \\2", x)  # CAPITALCase
-    x <- gsub("[._:-]+", " ", x)                     # separators (- last to avoid misinterpretation)
+    x <- gsub("[._:-]+", " ", x)                     # separators
     x <- gsub("([A-Za-z])([0-9])", "\\1 \\2", x)     # letter-digit boundary
     x <- gsub("([0-9])([A-Za-z])", "\\1 \\2", x)     # digit-letter boundary
     toks <- strsplit(x, "\\s+")[[1]]
@@ -187,7 +207,8 @@ describe_columns <- function(cols) {
     min_len <- min(lengths(chars))
 
     i <- 0L
-    while (i < min_len && length(unique(vapply(chars, `[`, character(1L), i + 1L))) == 1L) {
+    while (i < min_len &&
+             length(unique(vapply(chars, `[`, character(1L), i + 1L))) == 1L) {
       i <- i + 1L
     }
 
@@ -197,7 +218,11 @@ describe_columns <- function(cols) {
   # Finds longest common suffix across all strings in x, independent of tokens
   shared_suffix_chars <- function(x) {
     # Reverse each string, find shared _prefix_, reverse back
-    rev_x <- vapply(x, function(s) paste(rev(strsplit(s, "")[[1L]]), collapse = ""), character(1L))
+    rev_x <- vapply(x,
+                    function(s) {
+                      paste(rev(strsplit(s, "")[[1L]]), collapse = "")
+                    },
+                    character(1L))
     rev_shared <- shared_prefix_chars(rev_x)
     paste(rev(strsplit(rev_shared, "")[[1L]]), collapse = "")
   }
@@ -233,8 +258,8 @@ describe_columns <- function(cols) {
   names(tokens) <- cols
 
   # ── Prefix patterns ─────────────────────────────────────────────────────────
-  prefix_map <- split(cols, sapply(cols, prefix_token)) # group columns by first token
-  prefix_map <- prefix_map[!is.na(names(prefix_map))]   # remove groups with NA prefix
+  prefix_map <- split(cols, sapply(cols, prefix_token)) # group by first token
+  prefix_map <- prefix_map[!is.na(names(prefix_map))] # remove NA-prefix groups
 
   prefix_patterns <- list()
   for (p in names(prefix_map)) {
@@ -258,8 +283,8 @@ describe_columns <- function(cols) {
   }
 
   # ── Suffix patterns ─────────────────────────────────────────────────────────
-  suffix_map <- split(cols, sapply(cols, suffix_token)) # group columns by last token
-  suffix_map <- suffix_map[!is.na(names(suffix_map))]   # remove groups with NA suffix
+  suffix_map <- split(cols, sapply(cols, suffix_token)) # group by last token
+  suffix_map <- suffix_map[!is.na(names(suffix_map))] # remove NA-suffix groups
 
   suffix_patterns <- list()
   for (s in names(suffix_map)) {
@@ -267,7 +292,9 @@ describe_columns <- function(cols) {
     if (length(group) < min_group_size) next    # skip small group
 
     # Suffix exclusively owned by one prefix —> discard
-    first_tokens <- unique(vapply(group, function(col) tokens[[col]][1L], character(1L)))
+    first_tokens <- unique(vapply(group,
+                                  function(col) tokens[[col]][1L],
+                                  character(1L)))
     if (length(first_tokens) == 1L) next
 
     # Suffix cover all columns in type group —> discard
@@ -293,10 +320,13 @@ describe_columns <- function(cols) {
   # ── Residuals and formatting ────────────────────────────────────────────────
 
   # Residuals are columns not captured by any pattern
-  pattern_cols <- unique(unlist(lapply(c(prefix_patterns, suffix_patterns), `[[`, "cols")))
+  pattern_cols <- unique(unlist(lapply(c(prefix_patterns, suffix_patterns),
+                                       `[[`, "cols")))
   residuals    <- setdiff(cols, pattern_cols)
 
   # Render all patterns and residuals into a single comma-separated string
-  pattern_strs <- Filter(Negate(is.null), lapply(c(prefix_patterns, suffix_patterns), format_pattern))
+  pattern_strs <- Filter(Negate(is.null),
+                         lapply(c(prefix_patterns, suffix_patterns),
+                                format_pattern))
   paste(c(pattern_strs, residuals), collapse = ", ")
 }

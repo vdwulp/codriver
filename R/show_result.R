@@ -19,9 +19,9 @@ show_result <- function(context, action, prompt, result) {
 
   # Prepend space to inline comment if position is not directly after a space
   if (action$mode == "comment" &&
-      substr(context$contents[action$position[["row"]]],
-             action$position[["column"]] - 1,
-             action$position[["column"]] - 1) != " ") {
+        substr(context$contents[action$position[["row"]]],
+               action$position[["column"]] - 1,
+               action$position[["column"]] - 1) != " ") {
     result <- paste0(" ", result)
   }
 
@@ -34,7 +34,7 @@ show_result <- function(context, action, prompt, result) {
                      action$position[["column"]] - 1)
 
     if ((any(endsWith(before, tokens_before)) && !startsWith(result, " ")) ||
-        (!endsWith(before, " ") && any(startsWith(result, tokens_result)))) {
+          (!endsWith(before, " ") && any(startsWith(result, tokens_result)))) {
       result <- paste0(" ", result)
     }
   }
@@ -42,12 +42,12 @@ show_result <- function(context, action, prompt, result) {
   # ── Result presentation ─────────────────────────────────────────────────────
 
   if (action$mode %in% c("complete", "continue", "generate") ||
-      (action$mode == "comment" && action$text[2] == "")) {
+        (action$mode == "comment" && action$text[2] == "")) {
 
     # UI fixes for generate mode
     if (action$mode == "generate") {
       if (action$position[["row"]] > length(context$contents)) {
-        # Insertion point past end of file — prepend newline to result and reposition
+        # Insertion point past end of file —> prepend newline and reposition
         result <- paste0("\n", result)
         action$position <- rstudioapi::document_position(
           length(context$contents),
@@ -56,7 +56,8 @@ show_result <- function(context, action, prompt, result) {
       } else if (context$contents[action$position[["row"]]] != "") {
         # Insertion line is non-empty — insert newline before it
         rstudioapi::insertText(
-          location = rstudioapi::document_position(action$position[["row"]], 1L),
+          location =
+            rstudioapi::document_position(action$position[["row"]], 1L),
           id = id,
           text = "\n"
         )
@@ -73,7 +74,7 @@ show_result <- function(context, action, prompt, result) {
     )
 
   } else if (action$mode == "edit" ||
-             (action$mode == "comment" && action$text[2] != "")) {
+               (action$mode == "comment" && action$text[2] != "")) {
 
     # Show edit suggestion - showing as green/red highlighting
     rstudioapi::setCursorPosition(action$range$start, id = id)

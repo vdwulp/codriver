@@ -5,7 +5,9 @@ make_context <- function(contents) {
 }
 
 pos <- function(row, col) rstudioapi::document_position(row, col)
-rng <- function(r1, c1, r2, c2) rstudioapi::document_range(pos(r1, c1), pos(r2, c2))
+rng <- function(r1, c1, r2, c2) {
+  rstudioapi::document_range(pos(r1, c1), pos(r2, c2))
+}
 
 make_action <- function(mode, text = NULL, position = pos(3L, 1L),
                         range = rng(3L, 1L, 3L, 6L)) {
@@ -47,7 +49,7 @@ test_that("build_prompt - system and user are character strings", {
 })
 
 test_that("build_prompt - errors on unknown mode", {
-  ctx    <- make_context(c("x <- 1"))
+  ctx    <- make_context("x <- 1")
   action <- make_action("unknown")
   bp_mocks({
     expect_error(bp(ctx, action), "Unknown mode")
@@ -97,7 +99,8 @@ test_that("build_prompt - edit: user prompt contains Context before content", {
 })
 
 test_that("build_prompt - edit: user prompt contains Context after content", {
-  ctx    <- make_context(c("library(ggplot2)", "x <- 1", "x <- x + 1", "x <- x * 2"))
+  ctx    <- make_context(c("library(ggplot2)", "x <- 1",
+                           "x <- x + 1", "x <- x * 2"))
   action <- make_action("edit", text = "x <- x + 1", position = pos(3L, 1L),
                         range = rng(3L, 1L, 3L, 11L))
   bp_mocks({
@@ -112,8 +115,8 @@ test_that("build_prompt - edit: user prompt contains Context after content", {
 
 test_that("build_prompt - generate: system prompt mentions 'Write R code'", {
   ctx    <- make_context(c("library(dplyr)", "# filter rows", ""))
-  action <- make_action("generate", text = "filter rows", position = pos(3L, 1L),
-                        range = rng(2L, 1L, 2L, 14L))
+  action <- make_action("generate", text = "filter rows",
+                        position = pos(3L, 1L), range = rng(2L, 1L, 2L, 14L))
   bp_mocks({
     result <- bp(ctx, action)
     expect_match(result$system, "Write R code")
@@ -122,8 +125,8 @@ test_that("build_prompt - generate: system prompt mentions 'Write R code'", {
 
 test_that("build_prompt - generate: user prompt contains Instruction block", {
   ctx    <- make_context(c("library(dplyr)", "# filter rows", ""))
-  action <- make_action("generate", text = "filter rows", position = pos(3L, 1L),
-                        range = rng(2L, 1L, 2L, 14L))
+  action <- make_action("generate", text = "filter rows",
+                        position = pos(3L, 1L), range = rng(2L, 1L, 2L, 14L))
   bp_mocks({
     result <- bp(ctx, action)
     expect_match(result$user, "Instruction")
@@ -133,8 +136,8 @@ test_that("build_prompt - generate: user prompt contains Instruction block", {
 
 test_that("build_prompt - generate: user prompt contains Context before content", {
   ctx    <- make_context(c("library(dplyr)", "x <- 1", "# filter rows", ""))
-  action <- make_action("generate", text = "filter rows", position = pos(4L, 1L),
-                        range = rng(3L, 1L, 3L, 14L))
+  action <- make_action("generate", text = "filter rows",
+                        position = pos(4L, 1L), range = rng(3L, 1L, 3L, 14L))
   bp_mocks({
     result <- bp(ctx, action)
     expect_match(result$user, "Context before")
@@ -144,8 +147,8 @@ test_that("build_prompt - generate: user prompt contains Context before content"
 
 test_that("build_prompt - generate: user prompt contains Context after content", {
   ctx    <- make_context(c("library(dplyr)", "# filter rows", "", "x <- 1"))
-  action <- make_action("generate", text = "filter rows", position = pos(3L, 1L),
-                        range = rng(2L, 1L, 2L, 14L))
+  action <- make_action("generate", text = "filter rows",
+                        position = pos(3L, 1L), range = rng(2L, 1L, 2L, 14L))
   bp_mocks({
     result <- bp(ctx, action)
     expect_match(result$user, "Context after")
@@ -155,8 +158,8 @@ test_that("build_prompt - generate: user prompt contains Context after content",
 
 test_that("build_prompt - generate: context before includes last line when position is past end of file", {
   ctx    <- make_context(c("library(dplyr)", "# filter rows"))
-  action <- make_action("generate", text = "filter rows", position = pos(3L, 1L),
-                        range = rng(2L, 1L, 2L, 14L))
+  action <- make_action("generate", text = "filter rows",
+                        position = pos(3L, 1L), range = rng(2L, 1L, 2L, 14L))
   bp_mocks({
     result <- bp(ctx, action)
     expect_false(grepl("NA", result$user))
@@ -166,8 +169,8 @@ test_that("build_prompt - generate: context before includes last line when posit
 
 test_that("build_prompt - generate: no Context after block when position is past end of file", {
   ctx    <- make_context(c("library(dplyr)", "# filter rows"))
-  action <- make_action("generate", text = "filter rows", position = pos(3L, 1L),
-                        range = rng(2L, 1L, 2L, 14L))
+  action <- make_action("generate", text = "filter rows",
+                        position = pos(3L, 1L), range = rng(2L, 1L, 2L, 14L))
   bp_mocks({
     result <- bp(ctx, action)
     expect_false(grepl("Context after", result$user))
@@ -336,8 +339,10 @@ test_that("build_prompt reports packages available unqualified", {
                         range = rng(3L, 1L, 3L, 11L))
   bp_mocks({
     with_mocked_bindings(
-      search = function(...) c(".GlobalEnv", "package:stats", "package:utils",
-                               "package:base", "package:mock-attached-package"),
+      search = function(...) {
+        c(".GlobalEnv", "package:stats", "package:utils",
+          "package:base", "package:mock-attached-package")
+      },
       .package = "base",
       {
         result <- bp(ctx, action)

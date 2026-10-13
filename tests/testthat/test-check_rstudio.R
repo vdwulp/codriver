@@ -23,7 +23,7 @@ run_check <- function(available     = TRUE,
         if (pkg == "rstudioapi") package_version(rsapi_version)
         else utils::packageVersion(pkg, ...)
       },
-      cli_bullets = function(x, ...) { bullets <<- c(bullets, x) },
+      cli_bullets = function(x, ...) bullets <<- c(bullets, x),
       .package = "codriver",
       code = check_rstudio()
     )
@@ -120,13 +120,15 @@ test_that("check_rstudio - returns TRUE at boundary version (2026.04.0)", {
 test_that("check_rstudio - bullets contain TOO OLD for RStudio when too old", {
   reset_check()
   on.exit(reset_check())
-  expect_true(any(grepl("TOO OLD", run_check(rs_version = "2026.03.0")$bullets)))
+  expect_true(any(grepl("TOO OLD",
+                        run_check(rs_version = "2026.03.0")$bullets)))
 })
 
 test_that("check_rstudio - bullets contain TOO OLD for rstudioapi when too old", {
   reset_check()
   on.exit(reset_check())
-  expect_true(any(grepl("TOO OLD", run_check(rsapi_version = "0.18.0")$bullets)))
+  expect_true(any(grepl("TOO OLD",
+                        run_check(rsapi_version = "0.18.0")$bullets)))
 })
 
 test_that("check_rstudio - bullets contain MISSING when versions OK but hasFun FALSE", {

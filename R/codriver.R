@@ -31,7 +31,9 @@ codriver <- function() {
 
   # Check configuration
   if (is.null(get_config())) {
-    codriver_message("No configuration found, run `codriver::codriver_configure()` first.")
+    codriver_message(
+      "No configuration found, run `codriver::codriver_configure()` first."
+    )
     return(invisible(FALSE))
   }
 
@@ -60,20 +62,22 @@ codriver <- function() {
       action$text
     ),
     "edit" = codriver_message(
-        paste(
-          "Edit from %s:%s to %s:%s with original code",
-          if (grepl("\n", action$text, fixed = TRUE)) "```\n%s\n```" else "```%s```"
-        ),
-        action$range$start[["row"]],
-        action$range$start[["column"]],
-        action$range$end[["row"]],
-        action$range$end[["column"]],
-        action$text
+      paste(
+        "Edit from %s:%s to %s:%s with original code",
+        if (grepl("\n", action$text, fixed = TRUE)) "```\n%s\n```"
+        else "```%s```"
       ),
+      action$range$start[["row"]],
+      action$range$start[["column"]],
+      action$range$end[["row"]],
+      action$range$end[["column"]],
+      action$text
+    ),
     "comment" = codriver_message(
       paste0(
         "Inline comment at %s:%s",
-        if (action$text[2] == "") "" else paste0(" with original text '", action$text[2], "'")
+        if (action$text[2] == "") ""
+        else paste0(" with original text '", action$text[2], "'")
       ),
       action$position[["row"]],
       action$position[["column"]]

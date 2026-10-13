@@ -85,13 +85,14 @@ test_that("build_prompt_workspace - unreferenced object gets full description wh
 test_that("build_prompt_workspace - budget: at most 10 unreferenced objects shown", {
   # 15 objects, none referenced; only 10 should appear
   result <- do.call(bpw, c(list(text = "1 + 1"),
-                           setNames(as.list(seq_len(15L)), paste0("v", seq_len(15L)))))
+                           setNames(as.list(seq_len(15L)),
+                                    paste0("v", seq_len(15L)))))
   matches <- regmatches(result, gregexpr("\\bv[0-9]+\\b", result))[[1L]]
   expect_lte(length(unique(matches)), 10L)
 })
 
 test_that("build_prompt_workspace - budget: referenced objects do not consume unreferenced slots", {
-  # 9 referenced scalars leave a budget of 1; the single unreferenced object must appear
+  # 9 referenced scalars leave budget for single unreferenced object
   ref   <- setNames(as.list(seq_len(9L)), paste0("r", seq_len(9L)))
   extra <- list(extra_obj = 42L)
   text  <- paste(names(ref), collapse = " ")
@@ -178,7 +179,8 @@ test_that("describe_variable - df simple: format is 'name [NxM]'", {
 })
 
 test_that("describe_variable - df simple: no column names in output", {
-  result <- dv(data.frame(price = 1:5, label = letters[1:5]), "df", simple = TRUE)
+  result <-
+    dv(data.frame(price = 1:5, label = letters[1:5]), "df", simple = TRUE)
   expect_false(grepl("price", result))
   expect_false(grepl("label", result))
 })
@@ -222,7 +224,8 @@ test_that("describe_variable - df full narrow: exactly 10 columns uses flat list
 test_that("describe_variable - df full wide: uses pattern notation", {
   cols   <- paste0("amt_", c("paid", "due", "refund", "tax", "fee",
                              "gross", "net", "total", "base", "extra", "misc"))
-  df     <- setNames(as.data.frame(matrix(1L, nrow = 2L, ncol = length(cols))), cols)
+  df     <-
+    setNames(as.data.frame(matrix(1L, nrow = 2L, ncol = length(cols))), cols)
   result <- dv(df, "df")
   expect_match(result, "\\{->")
 })
