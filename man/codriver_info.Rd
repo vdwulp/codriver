@@ -8,12 +8,10 @@ codriver_info()
 }
 \value{
 A \code{codriver_info} object: a named list with elements
-\code{version}, \code{configuration}, \code{environment} (a named list
-with \code{r}, \code{rstudio}, \code{rstudioapi}, and \code{ellmer}), and
-\code{token_usage} (a tibble, or \code{NULL} if \pkg{ellmer} is not
-installed or no usage has been recorded).
+\code{version}, \code{configuration}, and \code{environment} (a named list
+with \code{r}, \code{rstudio}, \code{rstudioapi}, and \code{ellmer}).
 }
 \description{
-Collects the current package version, active configuration, R/RStudio
-environment details, and token usage for the active \pkg{ellmer} session.
+Collects the current package version, active configuration, and R/RStudio
+environment details.
 }

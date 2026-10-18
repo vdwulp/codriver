@@ -110,7 +110,7 @@ Please review your provider's data policy before use.
 
 ## 🔎 Diagnostics
 
-For diagnostic information about configuration, versions, and token usage, run
+For diagnostic information about configuration and versions, run
 [`codriver_info()`](https://vdwulp.github.io/codriver/reference/codriver_info.html):
 
 ```r
@@ -119,10 +119,10 @@ codriver::codriver_info()
 
 To inspect the system prompt, user prompt, and raw assistant response from the
 most recent codriver request, run
-[`codriver_last_chat()`](https://vdwulp.github.io/codriver/reference/codriver_last_chat.html):
+[`codriver_last_request()`](https://vdwulp.github.io/codriver/reference/codriver_last_request.html):
 
 ```r
-codriver::codriver_last_chat()
+codriver::codriver_last_request()
 ```
 
 ## 📄 License

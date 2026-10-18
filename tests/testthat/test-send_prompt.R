@@ -268,73 +268,11 @@ test_that("send_prompt - comment mode: returns response when comment is new", {
 })
 
 
-# ── Last chat ─────────────────────────────────────────────────────────────────
-
-test_that("set_last_chat - resets response when prompts are supplied", {
-  set_last_chat()
-  on.exit(set_last_chat())
-
-  set_last_chat("old system", "old user", "old response")
-  set_last_chat("new system", "new user")
-
-  result <- codriver_last_chat()
-
-  expect_equal(
-    result,
-    structure(
-      list(
-        system_prompt = "new system",
-        user_prompt = "new user"
-      ),
-      class = "codriver_last_chat"
-    )
-  )
-  expect_false("assistant_response" %in% names(codriver_last_chat()))
-})
-
-test_that("set_last_chat - preserves prompts when response is supplied", {
-  set_last_chat()
-  on.exit(set_last_chat())
-
-  set_last_chat("system", "user")
-  set_last_chat(assistant_response = "assistant")
-
-  expect_equal(
-    codriver_last_chat(),
-    structure(
-      list(
-        system_prompt = "system",
-        user_prompt = "user",
-        assistant_response = "assistant"
-      ),
-      class = "codriver_last_chat"
-    )
-  )
-})
-
-test_that("set_last_chat - removes response when NULL is supplied", {
-  set_last_chat()
-  on.exit(set_last_chat())
-
-  set_last_chat("system", "user", "assistant")
-  set_last_chat(assistant_response = NULL)
-
-  expect_false("assistant_response" %in% names(codriver_last_chat()))
-})
-
-test_that("set_last_chat - clears stored chat when called without arguments", {
-  set_last_chat()
-  on.exit(set_last_chat())
-
-  set_last_chat("system", "user", "assistant")
-  set_last_chat()
-
-  expect_null(codriver_last_chat())
-})
+# ── Record last request ───────────────────────────────────────────────────────
 
 test_that("send_prompt - records the most recent chat with raw response", {
-  set_last_chat()
-  on.exit(set_last_chat())
+  set_last_request()
+  on.exit(set_last_request())
 
   raw_response <- "```r\nresponse\n```"
 
@@ -347,110 +285,9 @@ test_that("send_prompt - records the most recent chat with raw response", {
   result <- send_prompt(NULL, make_action(text = "other"), make_prompt())
 
   expect_equal(result, "response")
-  expect_equal(
-    codriver_last_chat(),
-    structure(
-      list(
-        system_prompt = "sys",
-        user_prompt = "usr",
-        assistant_response = raw_response
-      ),
-      class = "codriver_last_chat"
-    )
-  )
-})
-
-test_that("print.codriver_last_chat - prints stored prompts and response", {
-  old_options <- options(width = 80L)
-  on.exit(options(old_options))
-
-  chat <- structure(
-    list(
-      system_prompt = "System prompt",
-      user_prompt = "User prompt",
-      assistant_response = "Assistant response"
-    ),
-    class = "codriver_last_chat"
-  )
-
-  output <- capture.output(print(chat))
-
-  expect_match(output[[1]], "^── codriver last chat ")
-
-  expect_true(any(output == "▶▶ SYSTEM PROMPT"))
-  expect_true(any(output == "System prompt"))
-
-  expect_true(any(output == "▶▶ USER PROMPT"))
-  expect_true(any(output == "User prompt"))
-
-  expect_true(any(output == "▶▶ ASSISTANT RESPONSE"))
-  expect_true(any(output == "Assistant response"))
-
-  expect_match(tail(output, 1L), "^─+$")
-})
-
-
-test_that("print.codriver_last_chat - prints unrecorded sections", {
-  chat <- structure(
-    list(
-      system_prompt = NULL,
-      user_prompt = NULL,
-      assistant_response = NULL
-    ),
-    class = "codriver_last_chat"
-  )
-
-  output <- capture.output(print(chat))
-
-  expect_true(any(output == "▶▶ SYSTEM PROMPT"))
-  expect_true(any(output == "▶▶ USER PROMPT"))
-  expect_true(any(output == "▶▶ ASSISTANT RESPONSE"))
-
-  expect_equal(sum(output == "  not recorded"), 3L)
-})
-
-
-test_that("print.codriver_last_chat - preserves line breaks in responses", {
-  chat <- structure(
-    list(
-      system_prompt = "System prompt",
-      user_prompt = "User prompt",
-      assistant_response = paste(
-        "%>% mutate(x = 1)",
-        "",
-        "%>% filter(x > 0)",
-        sep = "\n"
-      )
-    ),
-    class = "codriver_last_chat"
-  )
-
-  output <- capture.output(print(chat))
-
-  expect_true(any(output == "%>% mutate(x = 1)"))
-  expect_true(any(output == "%>% filter(x > 0)"))
-
-  first_line <- match("%>% mutate(x = 1)", output)
-  second_line <- match("%>% filter(x > 0)", output)
-
-  expect_equal(output[(first_line + 1L):(second_line - 1L)], "")
-})
-
-test_that("print.codriver_last_chat - wraps long lines", {
-  old_options <- options(width = 80L)
-  on.exit(options(old_options))
-
-  chat <- structure(
-    list(
-      system_prompt = "System prompt",
-      user_prompt = "User prompt",
-      assistant_response = strrep("x", 80L)
-    ),
-    class = "codriver_last_chat"
-  )
-
-  output <- capture.output(print(chat))
-
-  expect_true(any(output == strrep("x", 79L)))
-  expect_true(any(output == "x"))
+  last_request <- codriver_last_request()
+  expect_s3_class(last_request, "codriver_last_request")
+  expect_equal(last_request$system_prompt, "sys")
+  expect_equal(last_request$user_prompt, "usr")
+  expect_equal(last_request$assistant_response, raw_response)
 })

@@ -1,13 +1,11 @@
 #' Collect codriver diagnostic information
 #'
-#' Collects the current package version, active configuration, R/RStudio
-#' environment details, and token usage for the active \pkg{ellmer} session.
+#' Collects the current package version, active configuration, and R/RStudio
+#' environment details.
 #'
 #' @return A \code{codriver_info} object: a named list with elements
-#'   \code{version}, \code{configuration}, \code{environment} (a named list
-#'   with \code{r}, \code{rstudio}, \code{rstudioapi}, and \code{ellmer}), and
-#'   \code{token_usage} (a tibble, or \code{NULL} if \pkg{ellmer} is not
-#'   installed or no usage has been recorded).
+#'   \code{version}, \code{configuration}, and \code{environment} (a named list
+#'   with \code{r}, \code{rstudio}, \code{rstudioapi}, and \code{ellmer}).
 #'
 #' @importFrom rlang %||%
 #' @importFrom utils packageVersion capture.output
@@ -42,14 +40,6 @@ codriver_info <- function() {
   # Configuration
   config_args <- get_config()$args
 
-  # Token usage
-  token_usage <-
-    if (!is.null(ellmer_version)) {
-      suppressMessages(ellmer::token_usage())
-    } else {
-      NULL
-    }
-
   structure(
     list(
       version = version,
@@ -59,8 +49,7 @@ codriver_info <- function() {
         rstudio = rstudio_version,
         rstudioapi = rstudioapi_version,
         ellmer = ellmer_version
-      ),
-      token_usage = token_usage
+      )
     ),
     class = "codriver_info"
   )
@@ -68,18 +57,7 @@ codriver_info <- function() {
 
 #' @export
 print.codriver_info <- function(x, ...) {
-  token_usage <- x$token_usage
-
-  if (!is.null(token_usage) && nrow(token_usage) > 0L) {
-    token_str <- capture.output(print(token_usage, row.names = FALSE))
-    tbl_width <- max(nchar(token_str)) + 2L
-  } else {
-    token_str <- NULL
-    tbl_width <- 0L
-  }
-
-  # Rule width adapts to the widest token-usage line, minimum 56.
-  rule_width <- max(56L, tbl_width)
+  rule_width <- 56L
   rule       <- strrep("\u2500", rule_width)
   header     <- strtrim(paste0("\u2500\u2500 codriver info \u2500", rule),
                         rule_width)
@@ -120,16 +98,6 @@ print.codriver_info <- function(x, ...) {
     cat("  ellmer     :", format(x$environment$ellmer), "\n")
   } else {
     cat("  ellmer     : not installed\n")
-  }
-  cat("\n")
-
-  cat("ellmer token usage (this session)\n")
-  if (is.null(x$environment$ellmer)) {
-    cat("  ellmer not installed\n")
-  } else if (is.null(token_str)) {
-    cat("  no usage recorded\n")
-  } else {
-    for (ln in token_str) cat(" ", ln, "\n")
   }
 
   cat(rule, "\n")

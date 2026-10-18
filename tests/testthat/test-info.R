@@ -36,8 +36,6 @@ test_that("codriver_info - prints diagnostic sections when not configured", {
   expect_true(any(grepl("^configuration$", result$output)))
   expect_true(any(grepl("codriver not configured", result$output)))
   expect_true(any(grepl("^environment$", result$output)))
-  expect_true(any(grepl("^ellmer token usage \\(this session\\)$",
-                        result$output)))
   expect_true(startsWith(tail(result$output, 1), "\u2500"))
 })
 
@@ -47,7 +45,7 @@ test_that("codriver_info - returns diagnostic information", {
   expect_s3_class(result$value, "codriver_info")
   expect_named(
     result$value,
-    c("version", "configuration", "environment", "token_usage")
+    c("version", "configuration", "environment")
   )
   expect_s3_class(result$value$version, "package_version")
   expect_null(result$value$configuration)
@@ -94,7 +92,6 @@ test_that("codriver_info - reports unavailable optional packages", {
   expect_null(result$value$token_usage)
   expect_true(any(grepl("ellmer     : not installed", result$output,
                         fixed = TRUE)))
-  expect_true(any(grepl("ellmer not installed", result$output, fixed = TRUE)))
   expect_false(any(grepl("rstudioapi", result$output, fixed = TRUE)))
 })
 
@@ -114,48 +111,6 @@ test_that("codriver_info - prints RStudio version when available", {
         result$output,
         fixed = TRUE
       )))
-    }
-  )
-})
-
-
-# ── Token usage ───────────────────────────────────────────────────────────────
-
-test_that("codriver_info - prints and returns recorded ellmer token usage", {
-  skip_if_not_installed("ellmer")
-
-  usage <- tibble::tibble(
-    model         = "test-model",
-    input_tokens  = 12L,
-    output_tokens = 34L
-  )
-
-  with_mocked_bindings(
-    token_usage = function() usage,
-    .package = "ellmer",
-    code = {
-      result <- run_codriver_info()
-
-      expect_identical(result$value$token_usage, usage)
-      expect_true(any(grepl("test-model", result$output, fixed = TRUE)))
-      expect_true(any(grepl("12", result$output, fixed = TRUE)))
-      expect_true(any(grepl("34", result$output, fixed = TRUE)))
-    }
-  )
-})
-
-test_that("codriver_info - reports no usage when ellmer has none recorded", {
-  skip_if_not_installed("ellmer")
-
-  with_mocked_bindings(
-    token_usage = function() tibble::tibble(),
-    .package = "ellmer",
-    code = {
-      result <- run_codriver_info()
-
-      expect_s3_class(result$value$token_usage, "tbl_df")
-      expect_equal(nrow(result$value$token_usage), 0L)
-      expect_true(any(grepl("no usage recorded", result$output, fixed = TRUE)))
     }
   )
 })
