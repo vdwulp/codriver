@@ -1,4 +1,4 @@
-# codriver (development version)
+# codriver 1.1.0
 
 ### Enhancements
 
